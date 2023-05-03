@@ -1,0 +1,16 @@
+/* styles/amplify-overrides.css */
+
+/* Change the font family */
+.amplify-authenticator {
+  @apply font-text;
+}
+
+/* Change the background color and border radius of the submit button */
+.amplify-authenticator .amplify-form-section .amplify-button {
+  @apply bg-sky-700 rounded;
+}
+
+/* Add rounded edges to the form */
+.amplify-authenticator .amplify-form-container {
+  @apply rounded;
+}

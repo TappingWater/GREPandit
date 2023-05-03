@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+[data-amplify-authenticator] [data-amplify-form] {
+  @apply bg-white text-black font-text rounded-lg;
+}
+
+[data-amplify-authenticator] .amplify-button {
+  @apply bg-sky-700 text-white font-tabs drop-shadow-2xl hover:bg-sky-500 active:bg-sky-300 active:shadow-inner transition-all;
+}
+
+[data-amplify-authenticator] .federated-sign-in-button .amplify-text {
+  color: white !important;
+} 
