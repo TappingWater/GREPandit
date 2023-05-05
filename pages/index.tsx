@@ -1,6 +1,3 @@
-import { Authenticator } from "@aws-amplify/ui-react";
-import { GetServerSideProps, NextPage } from 'next';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import Image from "next/image";
 import Link from "next/link";
 

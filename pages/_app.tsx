@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import "@/styles/amplify-overide.css";
 import type { AppProps } from "next/app";
 import "@aws-amplify/ui-react/styles.css";
 import { Amplify } from "aws-amplify";
