@@ -4,7 +4,7 @@ import "@aws-amplify/ui-react/styles.css";
 import { Amplify } from "aws-amplify";
 import awsExports from "../src/aws-exports";
 import "../styles/globals.css";
-import { Nunito, Roboto_Condensed, Roboto } from "next/font/google";
+import { Nunito, Roboto_Condensed, Roboto, Fredericka_the_Great } from "next/font/google";
 import { Authenticator, View } from "@aws-amplify/ui-react";
 import Layout from "@/components/Layout";
 import Head from "next/head";
@@ -29,12 +29,18 @@ const subTextFont = Roboto_Condensed({
   style: ["normal"],
   weight: ["300", "400", "700"],
 });
+const chalkFont = Fredericka_the_Great({
+  subsets: ["latin"],
+  variable: "--font-chalk",
+  style: ["normal"],
+  weight: ["400"]
+});
 
 Amplify.configure({ ...awsExports, ssr: true });
 
 function MyApp({ Component, pageProps }: AppProps) {
   // Tailwind styling
-  const fontStyling = `${textFont.variable} ${headerFont.variable} ${subTextFont.variable}`;
+  const fontStyling = `${textFont.variable} ${headerFont.variable} ${subTextFont.variable} ${chalkFont.variable}`;
   return (
     <Authenticator.Provider>
       <View>

@@ -1,0 +1,21 @@
+import Link from "next/link";
+import Logo from "./Logo";
+
+const NonAuthHeader = () => {
+	const logoDivStyling: string = "flex-1 flex items-center";
+	const buttonStyling =
+    "min-w-[80px] bg-sky-700 p-2 rounded-lg font-tabs ml-auto drop-shadow-2xl hover:bg-sky-500 active:bg-sky-200 active:shadow-inner transition-all";
+
+		return (
+			<header className="fixed w-[100%] h-[90px] pt-3 pb-3 flex items-center bg-white z-20 border-solid border-pink-300 border-b-2">
+        <Logo className={logoDivStyling} />
+				<div className="ml-auto pr-5">
+					<Link href="/login">
+						<button className={buttonStyling}>Login</button>
+					</Link>
+				</div>
+			</header>
+    );
+};
+
+export default NonAuthHeader;

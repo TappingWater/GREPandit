@@ -81,6 +81,10 @@ module.exports = {
         heading: [
           "var(--font-heading)",
           "serif"
+        ],
+        chalk: [
+          "var(--font-chalk)",
+          "serif"
         ]
       }
     },
