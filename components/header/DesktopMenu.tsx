@@ -7,7 +7,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger
 } from "../ui/navigation-menu";
-import { link } from './MenuBar';
+import { MenuTab } from './MenuBar';
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,7 +32,7 @@ const ListItem = ({
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all hover:bg-slate-600 hover:text-white active:bg-slate-600 active:text-slate-200"
           )}
         >
-          <div className="text-sm font-medium leading-none">{title}</div>
+          <div className="text-sm font-medium leading-none font-heading">{title}</div>
           <p className="line-clamp-2 text-sm leading-snug font-light">
             {description}
           </p>
@@ -46,20 +46,20 @@ const ListItem = ({
  * Used to render the main tabs in the navigation menu:
  * ex: Verbal, Quantitative, Dashboard
  */
-const DesktopMenuTab = ({ link }: { link: link }) => {
+const DesktopMenuTab = ({ link }: { link: MenuTab }) => {
   return (
-    <NavigationMenuItem className="text-black font-tabs text-lg" key={link.id}>
-      <NavigationMenuTrigger key={link.id}>{link.name}</NavigationMenuTrigger>
-      <NavigationMenuContent className="text-black font-tabs text-md">
+    <NavigationMenuItem className="text-black font-text text-lg" key={link.id}>
+      <NavigationMenuTrigger className="font-tabs text-semibold" key={link.id}>{link.name}</NavigationMenuTrigger>
+      <NavigationMenuContent className="text-black text-md">
         <ul className="grid gap-2 p-5 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
           <li className="row-span-5 min-h-[420px]">
             <NavigationMenuLink asChild>
               <Link
-                className="flex h-full w-full select-none flex-col rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                className="flex h-full w-full select-none flex-col rounded-md bg-slate-200 p-6 no-underline outline-none focus:shadow-md"
                 href={link.href}
               >
                 <h1 className="font-chalk text-8xl justify-center h-[200px] flex items-center">{link.name.substring(0, 1)}</h1>
-                <div className="mb-2 mt-4 text-lg font-medium">{link.name}</div>
+                <div className="font-heading mb-2 mt-4 text-lg font-medium">{link.name}</div>
                 <p className="text-sm leading-tight text-muted-foreground">
                   {link.description}
                 </p>
@@ -89,7 +89,7 @@ const DesktopMenuTab = ({ link }: { link: link }) => {
 const DesktopMenu = ({
   links
 }: {
-  links: link[];
+  links: MenuTab[];
 }) => {
   return (
     <>

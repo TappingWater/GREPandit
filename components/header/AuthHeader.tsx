@@ -7,6 +7,10 @@ import ProfileDropDown from "./ProfileDropDown";
 const HamburgerMenu = dynamic(() => import("./HamburgerMenu"));
 const MenuBar = dynamic(() => import("./MenuBar"));
 
+/**
+ * Header component rendered at the top of the page when the user
+ * is authenticated
+ */
 const AuthHeader = ({ email }: { email: string }) => {
   const handleSignOut = async () => {
     try {

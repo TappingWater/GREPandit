@@ -10,6 +10,9 @@ const Path = (props: any) => (
   />
 );
 
+/**
+ * Hamburger menu with animations for the mobile menu
+ */
 const MenuToggle: React.FC<{ toggle: () => void }> = (props) => {
   const buttonStyling: string = "bg-white rounded-full p-2 border-black border-solid rounded-full border-2 mr-4";
   return (

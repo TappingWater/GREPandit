@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { link } from "./MenuBar";
+import { MenuTab } from "./MenuBar";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import IconTab from "../ui/IconTab";
@@ -31,7 +31,7 @@ const mobileTabVariants = {
  * Render a single main tab for the mobile menu as an accordion
  * component with option to drop down for subtab links
  */
-const MobileMenuTab = ({ link }: { link: link }) => {
+const MobileMenuTab = ({ link }: { link: MenuTab }) => {
   return (
     <Accordion
       type="single"
@@ -45,7 +45,7 @@ const MobileMenuTab = ({ link }: { link: link }) => {
         {link.tabs!.map((subTab) => {
           return (
             <Link href={link.href} key={link.name + ":subTab" + subTab.id}>
-              <AccordionContent className="w-[100%] text-left pl-2 font-light active:text-white active:bg-black transition-all">
+              <AccordionContent className="w-[100%] rounded-sm text-left pl-2 font-light active:text-white active:bg-black transition-all">
                 {subTab.name}
               </AccordionContent>
             </Link>
@@ -60,9 +60,9 @@ const MobileMenuTab = ({ link }: { link: link }) => {
  * Render the account drop down for the mobile menu with the profile and
  * billing tabs
  */
-const AccountDropDown = (links: link[]) => {
+const AccountDropDown = (links: MenuTab[]) => {
   return (
-    <motion.button
+    <motion.div
       className="text-md font-tabs w-full flex justify-start"
       variants={mobileTabVariants}
       whileTap={{ scale: 0.85 }}
@@ -80,7 +80,7 @@ const AccountDropDown = (links: link[]) => {
           {links.map((link) => {
             return (
               <Link href={link.href} key={link.name + link.id}>
-                <AccordionContent className="w-[100%] text-left pl-2 font-light active:text-white active:bg-black transition-all">
+                <AccordionContent className="w-[100%] text-left pl-2 font-light active:text-white active:bg-black transition-all rounded-sm">
                   {link.name}
                 </AccordionContent>
               </Link>
@@ -88,7 +88,7 @@ const AccountDropDown = (links: link[]) => {
           })}
         </AccordionItem>
       </Accordion>
-    </motion.button>
+    </motion.div>
   );
 };
 
@@ -100,33 +100,33 @@ const MobileMenu = ({
   accountLinks,
   logOut
 }: {
-  links: link[];
-  accountLinks: link[];
+  links: MenuTab[];
+  accountLinks: MenuTab[];
   logOut: () => void;
 }) => {
   return (
     <>
       {links.map((link) => {
         return (
-          <motion.button
+          <motion.div
             className="text-md font-tabs w-full flex justify-start"
             variants={mobileTabVariants}
             whileTap={{ scale: 0.85 }}
             key={link.id}
           >
             <MobileMenuTab link={link}></MobileMenuTab>
-          </motion.button>
+          </motion.div>
         );
       })}
       {AccountDropDown(accountLinks)}
-      <motion.button
+      <motion.div
         variants={mobileTabVariants}
         whileTap={{ scale: 0.85 }}
         onClick={logOut}
         className="h-[30px] w-[85%] bg-slate-800 text-white rounded font-tabs text-sm"
       >
         <IconTab img="/icons/logout.svg" name="Log Out"></IconTab>
-      </motion.button>
+      </motion.div>
     </>
   );
 };

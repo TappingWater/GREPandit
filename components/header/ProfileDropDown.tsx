@@ -9,6 +9,10 @@ import {
 import Link from "next/link";
 import IconTab from "../ui/IconTab";
 
+/**
+ * Render the profile drop down option for the desktop nav bar.
+ * Contains both the email and logout
+ */
 const ProfileDropDown = ({
   email,
   logOut,
@@ -16,12 +20,11 @@ const ProfileDropDown = ({
   email: string;
   logOut: () => void;
 }) => {
-
-	const tabStyling = "hover:bg-slate-600 hover:cursor hover:text-white active:bg-slate-600 active:text-white"
+	const tabStyling = "hover:bg-slate-600 hover:cursor hover:text-white active:bg-slate-600 active:text-white font-tabs"
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border-none bg-pink-300 font-bold text-sky-700 text-center font-tabs text-2xl h-[40px] w-[40px] rounded-full">
-        {email.charAt(0)}
+      <DropdownMenuTrigger className="border-none bg-pink-300 font-bold text-sky-700 flex items-center justify-center font-tabs text-2xl h-[40px] w-[40px] rounded-full">
+        <span>{email.charAt(0)}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>{email}</DropdownMenuLabel>
@@ -33,7 +36,7 @@ const ProfileDropDown = ({
           <Link href="/billing" className="w-full"><IconTab img="/icons/billing.svg" name="Billing"/></Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logOut} className={tabStyling}><IconTab img="/icons/logout-black.svg" name="Log Out"/></DropdownMenuItem>
+        <DropdownMenuItem className={tabStyling}><button onClick={logOut} ><IconTab img="/icons/logout-black.svg" name="Log Out"/></button></DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

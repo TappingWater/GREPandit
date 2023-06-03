@@ -17,7 +17,7 @@ export function WithAuth(Component: React.ComponentType<any>) {
         const [shouldRedirect, setShouldRedirect] = useState(false);
 
         useEffect(() => {
-            if (authStatus !== 'authenticated') {
+            if (authStatus == 'unauthenticated') {
                 setShouldRedirect(true);
             }
         }, [authStatus]);
@@ -30,12 +30,21 @@ export function WithAuth(Component: React.ComponentType<any>) {
             return () => clearTimeout(timeoutId);
         }, [shouldRedirect, Router]);
 
-        if (authStatus !== 'authenticated') {
+        if (authStatus === 'unauthenticated') {
             return (
                 <div className="h-[calc(100vh-100px)] w-[100%] font-tabs text-xl text-center flex flex-col items-center justify-center space-y-8">
                     Unauthenticated user. Redirecting to login page.
                     <PulseLoader color='white'></PulseLoader>
                 </div>);
+        }
+
+        if (authStatus === 'configuring') {
+            return (
+                <div className="h-[calc(100vh-100px)] w-[100%] font-tabs text-xl text-center flex flex-col items-center justify-center space-y-8">
+                    <PulseLoader color='white'></PulseLoader>
+                    <p>Loading ...</p>
+                </div>
+            )
         }
 
         return <Component user={user} />;

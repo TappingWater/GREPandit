@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Logo from "./Logo";
 
+/**
+ * Default header to be displayed when user is not authenticated
+ */
 const NonAuthHeader = () => {
 	const logoDivStyling: string = "flex-1 flex items-center";
 	const buttonStyling =
