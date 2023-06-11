@@ -24,8 +24,8 @@ const VerbalQuiz = () => {
 	const [problems, setProblems] = useState<VerbalProblem[]>([]);
 	const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
 	const [data, setData] = useState<RandomQuestionRequest>({
-		limit: 1,
-		type: "TextCompletion",
+		limit: 5,
+		type: "SentenceEquivalence",
 	});
 	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestion/random`;
 
@@ -55,8 +55,10 @@ const VerbalQuiz = () => {
 
 	const handleProblemCompleted = () => {
 		// If there are more problems, go to next. Otherwise, fetch new problems.
+		console.log(currentProblemIndex);
 		if (currentProblemIndex < problems.length - 1) {
-			setCurrentProblemIndex(currentProblemIndex + 1);
+			setCurrentProblemIndex((curr) => curr + 1);
+			console.log(problems);
 		} else {
 			fetchProblems(data);
 		}

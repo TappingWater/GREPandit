@@ -18,6 +18,7 @@ export type VerbalProblem = {
 	explanation: string;
 	difficulty: string;
 	vocabulary: Word[];
+	wordmap: Map<string, string>;
 };
 
 /**

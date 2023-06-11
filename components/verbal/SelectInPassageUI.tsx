@@ -1,17 +1,39 @@
 import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import { PRIMARY_BUTTON_STYLE, PARAGRAPH_STYLE } from "@/lib/styles";
+import {
+	handleRadioChange,
+	renderButtons,
+	displayOptions,
+	processReviewParagraph,
+	renderNotification,
+	useVerbalProblem,
+} from "@/lib/verbalHelpers";
 import { useState } from "react";
 
 const SelectInPassageUI = ({
-	isReviewMode,
 	problem,
 	handleSubmit,
+	handleNext,
 }: {
-	isReviewMode: boolean;
 	problem: VerbalProblem;
 	handleSubmit: (selectedOptions: string[]) => void;
+	handleNext: () => void;
 }) => {
-	const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+	const {
+		selectedOptions,
+		setSelectedOptions,
+		answeredCorrectly,
+		setAnsweredCorrectly,
+		reviewMode,
+		setReviewMode,
+		showMoreInfoOptions,
+		setShowMoreInfoOptions,
+		resetProblem,
+		handleNextProb,
+		optionMap,
+		emptyAnswer,
+		setEmptyAnswer,
+	} = useVerbalProblem(problem, handleSubmit, handleNext);
 
 	// normalize text
 	const normalizeText = (text: string) => {
@@ -31,40 +53,14 @@ const SelectInPassageUI = ({
 		if (sentenceToOption.has(normalizeText(sentence))) {
 			const option = sentenceToOption.get(normalizeText(sentence)).value;
 			setSelectedOptions([option]);
-			handleRadioChange(option);
+			handleRadioChange(
+				option,
+				setSelectedOptions,
+				false,
+				reviewMode,
+				setShowMoreInfoOptions
+			);
 		}
-	};
-
-	// Display options based on the type
-	const displayOptions = () => {
-		return problem.options.map((option, index) => (
-			<li
-				key={option.value}
-				className={`w-full mb-2 mt-2 p-2 hover:cursor-pointer flex items-center ${
-					index != problem.options.length - 1
-						? "border-b border-slate-200"
-						: ""
-				}`}
-				onClick={() => handleRadioChange(option.value)}
-			>
-				<input
-					type='radio'
-					name='options'
-					value={option.value}
-					className='w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer'
-					checked={selectedOptions.includes(option.value)}
-					onChange={(e) => {
-						e.stopPropagation();
-						handleRadioChange(option.value);
-					}}
-				/>
-				<label className='hover:cursor-pointer'>{option.value}</label>
-			</li>
-		));
-	};
-
-	const handleRadioChange = (optionValue: string) => {
-		setSelectedOptions([optionValue]);
 	};
 
 	const sentences = problem.paragraph?.String.split(".");
@@ -89,7 +85,13 @@ const SelectInPassageUI = ({
 						}`}
 						onClick={() => handleSentenceClick(sentence)}
 					>
-						{sentence}
+						{!reviewMode
+							? sentence
+							: processReviewParagraph(
+									sentence,
+									problem.vocabulary,
+									problem.wordmap
+							  )}
 						{index !== sentences.length - 1 ? ". " : ""}
 					</span>
 				))}
@@ -102,15 +104,36 @@ const SelectInPassageUI = ({
 				</span>
 			</p>
 			<ul className='bg-white text-black rounded-lg mt-2 mb-2 md:mt-4 md:mb-4 p-2'>
-				{displayOptions()}
+				{displayOptions(
+					answeredCorrectly,
+					reviewMode,
+					problem.options,
+					problem,
+					selectedOptions,
+					showMoreInfoOptions,
+					setSelectedOptions,
+					setShowMoreInfoOptions
+				)}
 			</ul>
-			<div className='flex justify-end'>
-				<button
-					onClick={() => handleSubmit(selectedOptions)}
-					className={`${PRIMARY_BUTTON_STYLE}`}
-				>
-					Submit
-				</button>
+			<div>
+				{renderNotification(emptyAnswer, reviewMode, answeredCorrectly)}
+			</div>
+			<div className='flex justify-end space-x-4'>
+				{renderButtons(
+					selectedOptions,
+					optionMap,
+					showMoreInfoOptions,
+					reviewMode,
+					setShowMoreInfoOptions,
+					setAnsweredCorrectly,
+					setReviewMode,
+					answeredCorrectly,
+					handleSubmit,
+					handleNextProb,
+					resetProblem,
+					1,
+					setEmptyAnswer
+				)}
 			</div>
 		</div>
 	);

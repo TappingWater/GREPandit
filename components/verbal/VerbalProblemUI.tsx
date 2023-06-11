@@ -1,5 +1,4 @@
 import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
-import { useState } from "react";
 import ReadingComprehensionUI from "./ReadingComprehensionUI";
 import SelectInPassageUI from "./SelectInPassageUI";
 import { HEADING_STYLE, UI_STYLE } from "@/lib/styles";
@@ -18,15 +17,31 @@ const VerbalProblemUI = ({
 	problem: VerbalProblem;
 	onProblemCompleted: () => void;
 }) => {
-	const [isReviewMode, setReviewMode] = useState<boolean>(false);
-
 	/**
-	 * Function that is used when handling a problem
+	 * Function that is used when handling a problem submission.
+	 * User stats are sent to the endpoint for saving
 	 */
 	const handleSubmit = (selectedOptions: string[]) => {
 		// Your logic for when the problem is answered
 		// Then, signal that the problem has been completed:
+		console.log("Submitted");
 		console.log(selectedOptions);
+	};
+
+	/**
+	 * Function that is used when user wants to mark a problem
+	 * for later
+	 */
+	const handleMarkQuestion = (questionId: number) => {
+		console.log(questionId);
+	};
+
+	/**
+	 * Function that is used when the user wants to move
+	 * on to the next question
+	 */
+	const handleNext = () => {
+		console.log("NEXT");
 		onProblemCompleted();
 	};
 
@@ -37,36 +52,60 @@ const VerbalProblemUI = ({
 		if (problem.framed_as == "SelectSentence") {
 			return (
 				<SelectInPassageUI
-					isReviewMode={isReviewMode}
 					problem={problem}
 					handleSubmit={handleSubmit}
+					handleNext={handleNext}
 				/>
 			);
 		} else if (problem.type == "ReadingComprehension") {
 			return (
 				<ReadingComprehensionUI
-					isReviewMode={isReviewMode}
 					problem={problem}
 					handleSubmit={handleSubmit}
+					handleNext={handleNext}
 				/>
 			);
 		} else if (problem.type == "TextCompletion") {
 			return (
 				<TextCompletionUI
-					isReviewMode={isReviewMode}
 					problem={problem}
 					handleSubmit={handleSubmit}
+					handleNext={handleNext}
 				/>
 			);
 		} else if (problem.type == "SentenceEquivalence") {
 			return (
 				<SentenceEquivalanceUI
-					isReviewMode={isReviewMode}
+					isReviewMode={false}
 					problem={problem}
 					handleSubmit={handleSubmit}
 				/>
 			);
 		}
+	};
+
+	/**
+	 * Render problem difficulty
+	 */
+	const renderProblemDifficulty = () => {
+		var style = "text-sky-500";
+		if (problem.difficulty == "Medium") {
+			style = "text-indigo-600";
+		} else if (problem.difficulty == "Hard") {
+			style = "text-pink-600";
+		}
+		return (
+			<p>
+				<span className={`${style} text-sm font-semibold font-tabs`}>
+					{problem.difficulty}:
+				</span>
+				<span
+					className={`text-sky-700 text-sm font-semibold font-tabs`}
+				>
+					{" " + insertSpacesBeforeCapitals(problem.competence)}
+				</span>
+			</p>
+		);
 	};
 
 	/**
@@ -78,6 +117,7 @@ const VerbalProblemUI = ({
 				<h2 className={`${HEADING_STYLE} text-sm`}>
 					{insertSpacesBeforeCapitals(problem.type)}
 				</h2>
+				{renderProblemDifficulty()}
 				{renderProblem(problem)}
 			</div>
 		);
