@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
 import { PARAGRAPH_STYLE } from "@/lib/styles";
 import {
-	displayOptions,
-	processReviewParagraph,
+	renderOptions,
 	renderButtons,
 	renderNotification,
-	useVerbalProblem,
+	renderReviewVocab,
+	getJustificationDisplay,
 } from "@/lib/verbalHelpers";
 
 /**
@@ -27,25 +27,88 @@ const ReadingComprehensionUI = ({
 	const {
 		selectedOptions,
 		setSelectedOptions,
-		answeredCorrectly,
-		setAnsweredCorrectly,
+		selectedAnswers,
+		setSelectedAnswers,
+		notificationMsg,
+		setNotificationMsg,
 		reviewMode,
 		setReviewMode,
-		showMoreInfoOptions,
-		setShowMoreInfoOptions,
+		optionJustificationDisplayMap,
+		setOptionJustificationDisplayMap,
 		resetProblem,
 		handleNextProb,
 		optionMap,
-		emptyAnswer,
-		setEmptyAnswer,
 	} = useVerbalProblem(problem, handleSubmit, handleNext);
+
+	// Update selected options for MCQMultipleChoice type
+	const handleCheckboxChange = (optionValue: string) => {
+		if (selectedAnswers.length != 0 && reviewMode == false) {
+			return;
+		}
+		let newSelectedOptions;
+		if (selectedOptions.includes(optionValue)) {
+			newSelectedOptions = selectedOptions.filter(
+				(opt) => opt !== optionValue
+			);
+		} else {
+			newSelectedOptions = [...selectedOptions, optionValue];
+		}
+		setSelectedOptions(newSelectedOptions);
+		if (reviewMode) {
+			setOptionJustificationDisplayMap(
+				getJustificationDisplay(newSelectedOptions)
+			);
+		}
+	};
+
+	// Update selected option for MCQSingleAnswer type
+	const handleRadioChange = (optionValue: string) => {
+		console.log(optionValue);
+		if (selectedAnswers.length != 0 && reviewMode == false) {
+			return;
+		}
+		const newSelectedOptions = [optionValue];
+		setSelectedOptions(newSelectedOptions);
+		if (reviewMode) {
+			setOptionJustificationDisplayMap(
+				getJustificationDisplay(newSelectedOptions)
+			);
+		}
+	};
+
+	// Renders the option based on type
+	const renderOptionsBasedOnFramedAs = () => {
+		if (problem.framed_as === "MCQSingleAnswer") {
+			return renderOptions(
+				true,
+				reviewMode,
+				problem.options,
+				problem,
+				selectedOptions,
+				selectedAnswers,
+				optionJustificationDisplayMap,
+				handleRadioChange
+			);
+		} else {
+			return renderOptions(
+				false,
+				reviewMode,
+				problem.options,
+				problem,
+				selectedOptions,
+				selectedAnswers,
+				optionJustificationDisplayMap,
+				handleCheckboxChange
+			);
+		}
+	};
 
 	return (
 		<div className='text-sm md:text-base'>
 			<p className={`${PARAGRAPH_STYLE} p-2 md:p-4 leading-8`}>
 				{!reviewMode
 					? problem.paragraph?.String
-					: processReviewParagraph(
+					: renderReviewVocab(
 							problem.paragraph!.String!,
 							problem.vocabulary,
 							problem.wordmap
@@ -55,35 +118,23 @@ const ReadingComprehensionUI = ({
 				{problem.question}
 			</p>
 			<ul className='bg-white text-black rounded-lg mt-2 mb-2 md:mt-4 md:mb-4 p-2'>
-				{displayOptions(
-					answeredCorrectly,
-					reviewMode,
-					problem.options,
-					problem,
-					selectedOptions,
-					showMoreInfoOptions,
-					setSelectedOptions,
-					setShowMoreInfoOptions
-				)}
+				{renderOptionsBasedOnFramedAs()}
 			</ul>
-			<div>
-				{renderNotification(emptyAnswer, reviewMode, answeredCorrectly)}
-			</div>
+			<div>{renderNotification(notificationMsg, reviewMode)}</div>
 			<div className='flex justify-end space-x-4'>
 				{renderButtons(
+					1,
 					selectedOptions,
-					optionMap,
-					showMoreInfoOptions,
+					selectedAnswers,
 					reviewMode,
-					setShowMoreInfoOptions,
-					setAnsweredCorrectly,
+					optionMap,
+					setOptionJustificationDisplayMap,
+					setNotificationMsg,
+					setSelectedAnswers,
 					setReviewMode,
-					answeredCorrectly,
 					handleSubmit,
 					handleNextProb,
-					resetProblem,
-					1,
-					setEmptyAnswer
+					resetProblem
 				)}
 			</div>
 		</div>

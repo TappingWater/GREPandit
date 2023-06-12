@@ -1,15 +1,19 @@
-import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
-import { PRIMARY_BUTTON_STYLE, PARAGRAPH_STYLE } from "@/lib/styles";
+import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
+import { PARAGRAPH_STYLE } from "@/lib/styles";
 import {
-	handleRadioChange,
+	renderOptions,
 	renderButtons,
-	displayOptions,
-	processReviewParagraph,
 	renderNotification,
-	useVerbalProblem,
+	renderReviewVocab,
+	getJustificationDisplay,
 } from "@/lib/verbalHelpers";
-import { useState } from "react";
+import { normalizeText } from "@/lib/helpers";
 
+/**
+ * Component used to render verbal problems where user has to select a sentence
+ * from a paragraph
+ */
 const SelectInPassageUI = ({
 	problem,
 	handleSubmit,
@@ -22,26 +26,18 @@ const SelectInPassageUI = ({
 	const {
 		selectedOptions,
 		setSelectedOptions,
-		answeredCorrectly,
-		setAnsweredCorrectly,
+		selectedAnswers,
+		setSelectedAnswers,
+		notificationMsg,
+		setNotificationMsg,
 		reviewMode,
 		setReviewMode,
-		showMoreInfoOptions,
-		setShowMoreInfoOptions,
+		optionJustificationDisplayMap,
+		setOptionJustificationDisplayMap,
 		resetProblem,
 		handleNextProb,
 		optionMap,
-		emptyAnswer,
-		setEmptyAnswer,
 	} = useVerbalProblem(problem, handleSubmit, handleNext);
-
-	// normalize text
-	const normalizeText = (text: string) => {
-		return text
-			.toLowerCase()
-			.replace(/[.,\n]/g, "")
-			.trim();
-	};
 
 	// Create a mapping from normalized sentence to its corresponding option
 	const sentenceToOption = new Map();
@@ -49,17 +45,24 @@ const SelectInPassageUI = ({
 		sentenceToOption.set(normalizeText(option.value), option);
 	});
 
+	// Update selected option for MCQSingleAnswer type
+	const handleRadioChange = (optionValue: string) => {
+		if (selectedAnswers.length != 0 && reviewMode == false) {
+			return;
+		}
+		const newSelectedOptions = [optionValue];
+		setSelectedOptions(newSelectedOptions);
+		if (reviewMode) {
+			setOptionJustificationDisplayMap(
+				getJustificationDisplay(newSelectedOptions)
+			);
+		}
+	};
+
 	const handleSentenceClick = (sentence: string) => {
 		if (sentenceToOption.has(normalizeText(sentence))) {
 			const option = sentenceToOption.get(normalizeText(sentence)).value;
-			setSelectedOptions([option]);
-			handleRadioChange(
-				option,
-				setSelectedOptions,
-				false,
-				reviewMode,
-				setShowMoreInfoOptions
-			);
+			handleRadioChange(option);
 		}
 	};
 
@@ -87,7 +90,7 @@ const SelectInPassageUI = ({
 					>
 						{!reviewMode
 							? sentence
-							: processReviewParagraph(
+							: renderReviewVocab(
 									sentence,
 									problem.vocabulary,
 									problem.wordmap
@@ -104,35 +107,32 @@ const SelectInPassageUI = ({
 				</span>
 			</p>
 			<ul className='bg-white text-black rounded-lg mt-2 mb-2 md:mt-4 md:mb-4 p-2'>
-				{displayOptions(
-					answeredCorrectly,
+				{renderOptions(
+					true,
 					reviewMode,
 					problem.options,
 					problem,
 					selectedOptions,
-					showMoreInfoOptions,
-					setSelectedOptions,
-					setShowMoreInfoOptions
+					selectedAnswers,
+					optionJustificationDisplayMap,
+					handleSentenceClick
 				)}
 			</ul>
-			<div>
-				{renderNotification(emptyAnswer, reviewMode, answeredCorrectly)}
-			</div>
+			<div>{renderNotification(notificationMsg, reviewMode)}</div>
 			<div className='flex justify-end space-x-4'>
 				{renderButtons(
+					1,
 					selectedOptions,
-					optionMap,
-					showMoreInfoOptions,
+					selectedAnswers,
 					reviewMode,
-					setShowMoreInfoOptions,
-					setAnsweredCorrectly,
+					optionMap,
+					setOptionJustificationDisplayMap,
+					setNotificationMsg,
+					setSelectedAnswers,
 					setReviewMode,
-					answeredCorrectly,
 					handleSubmit,
 					handleNextProb,
-					resetProblem,
-					1,
-					setEmptyAnswer
+					resetProblem
 				)}
 			</div>
 		</div>

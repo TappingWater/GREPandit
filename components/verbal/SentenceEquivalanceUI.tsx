@@ -1,14 +1,19 @@
-import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
-import { PRIMARY_BUTTON_STYLE, PARAGRAPH_STYLE } from "@/lib/styles";
-import { useState } from "react";
+import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
+import { useEffect, useState } from "react";
+import { PARAGRAPH_STYLE } from "@/lib/styles";
 import {
-	displayOptions,
-	processReviewParagraph,
+	renderOptions,
 	renderButtons,
 	renderNotification,
-	useVerbalProblem,
-} from "../../lib/verbalHelpers";
+	renderReviewVocab,
+	getJustificationDisplay,
+} from "@/lib/verbalHelpers";
 
+/**
+ * Component used to render a verbal question problem with the type
+ * of sentence equivalence
+ */
 const SentenceEquivalanceUI = ({
 	problem,
 	handleSubmit,
@@ -21,27 +26,65 @@ const SentenceEquivalanceUI = ({
 	const {
 		selectedOptions,
 		setSelectedOptions,
-		answeredCorrectly,
-		setAnsweredCorrectly,
+		selectedAnswers,
+		setSelectedAnswers,
+		notificationMsg,
+		setNotificationMsg,
 		reviewMode,
 		setReviewMode,
-		showMoreInfoOptions,
-		setShowMoreInfoOptions,
+		optionJustificationDisplayMap,
+		setOptionJustificationDisplayMap,
 		resetProblem,
 		handleNextProb,
 		optionMap,
-		emptyAnswer,
-		setEmptyAnswer,
 	} = useVerbalProblem(problem, handleSubmit, handleNext);
-	const [displaySelection, setDisplayedSelection] = useState<string>(
-		" ........................"
-	);
+	const [displaySelection, setDisplayedSelection] =
+		useState<string>("              ");
+	useEffect(() => {
+		if (!reviewMode && selectedAnswers.length > 0) {
+			setDisplayedSelection(selectedAnswers.join(" / "));
+		}
+	}, [reviewMode, selectedAnswers]);
+
+	const resetThisProb = () => {
+		resetProblem();
+		setDisplayedSelection("              ");
+	};
 
 	const splitParagraphIntoBlanks = (paragraph?: string) => {
 		return paragraph ? paragraph.split("{BLANK}") : [];
 	};
 	const blanks = splitParagraphIntoBlanks(problem.paragraph!.String);
 	const numberOfBlanks = blanks ? blanks.length - 1 : 0;
+
+	// Update selected options for MCQMultipleChoice type
+	const handleCheckboxChange = (optionValue: string) => {
+		if (selectedAnswers.length != 0 && reviewMode == false) {
+			return;
+		}
+		let newSelectedOptions;
+		if (selectedOptions.includes(optionValue)) {
+			newSelectedOptions = selectedOptions.filter(
+				(opt) => opt !== optionValue
+			);
+		} else {
+			newSelectedOptions = [...selectedOptions, optionValue];
+		}
+		if (newSelectedOptions.length > 2) {
+			newSelectedOptions.shift();
+		}
+		if (newSelectedOptions.length == 0) {
+			setDisplayedSelection("              ");
+		} else {
+			setDisplayedSelection(newSelectedOptions.join(" / "));
+		}
+		setSelectedOptions(newSelectedOptions);
+		if (reviewMode) {
+			setOptionJustificationDisplayMap(
+				getJustificationDisplay(newSelectedOptions)
+			);
+		}
+	};
 
 	return (
 		<div className='text-sm md:text-base'>
@@ -50,12 +93,16 @@ const SentenceEquivalanceUI = ({
 					<span key={index}>
 						{reviewMode
 							? blank
-							: processReviewParagraph(
+							: renderReviewVocab(
 									blank,
 									problem.vocabulary,
 									problem.wordmap
 							  )}
-						{index < numberOfBlanks && displaySelection}
+						{index < numberOfBlanks && (
+							<span className='underline underline-offset-8 decoration-dashed min-w-[40px]'>
+								{displaySelection.replace(/ /g, "\u00A0")}
+							</span>
+						)}
 					</span>
 				))}
 			</p>
@@ -63,35 +110,32 @@ const SentenceEquivalanceUI = ({
 				{problem.question}
 			</p>
 			<ul className='bg-white text-black rounded-lg mt-2 mb-2 md:mt-4 md:mb-4 p-2'>
-				{displayOptions(
-					answeredCorrectly,
+				{renderOptions(
+					false,
 					reviewMode,
 					problem.options,
 					problem,
 					selectedOptions,
-					showMoreInfoOptions,
-					setSelectedOptions,
-					setShowMoreInfoOptions
+					selectedAnswers,
+					optionJustificationDisplayMap,
+					handleCheckboxChange
 				)}
 			</ul>
-			<div>
-				{renderNotification(emptyAnswer, reviewMode, answeredCorrectly)}
-			</div>
+			<div>{renderNotification(notificationMsg, reviewMode)}</div>
 			<div className='flex justify-end space-x-4'>
 				{renderButtons(
+					2,
 					selectedOptions,
-					optionMap,
-					showMoreInfoOptions,
+					selectedAnswers,
 					reviewMode,
-					setShowMoreInfoOptions,
-					setAnsweredCorrectly,
+					optionMap,
+					setOptionJustificationDisplayMap,
+					setNotificationMsg,
+					setSelectedAnswers,
 					setReviewMode,
-					answeredCorrectly,
 					handleSubmit,
 					handleNextProb,
-					resetProblem,
-					2,
-					setEmptyAnswer
+					resetThisProb
 				)}
 			</div>
 		</div>

@@ -1,301 +1,146 @@
 import { VerbalProblem, Option, Word } from "@/lib/apitypes/VerbalTypes";
-import { useState, useCallback } from "react";
-
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import { capitalize, removePunctuation } from "./helpers";
+import { removePunctuation } from "./helpers";
+import WordDialog from "@/components/verbal/WordDialog";
 
 const PRIMARY_BUTTON_STYLE =
 	"min-w-[80px] bg-sky-700 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-sky-600 active:bg-sky-400 active:shadow-inner transition-all";
 
-export const useVerbalProblem = (
-	problem: VerbalProblem,
-	handleSubmit: (selectedOptions: string[]) => void,
-	handleNext: () => void
-) => {
-	const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-	const [answeredCorrectly, setAnsweredCorrectly] = useState<boolean | null>(
-		null
-	);
-	const [reviewMode, setReviewMode] = useState<boolean>(false);
-	const [emptyAnswer, setEmptyAnswer] = useState<boolean>(false);
-	const [showMoreInfoOptions, setShowMoreInfoOptions] = useState<
-		Map<string, boolean>
-	>(
-		problem.options.reduce((map, option) => {
-			map.set(option.value, false);
-			return map;
-		}, new Map<string, boolean>())
-	);
-
-	const resetProblem = () => {
-		setSelectedOptions([]);
-		setAnsweredCorrectly(null);
-		setReviewMode(false);
-		setShowMoreInfoOptions((prevShowMoreInfoOptions) => {
-			const newShowMoreInfoOptions = new Map();
-			problem.options.map((option) =>
-				newShowMoreInfoOptions.set(option.value, false)
-			);
-			return newShowMoreInfoOptions;
-		});
-	};
-
-	const handleNextProb = () => {
-		handleNext();
-		resetProblem();
-	};
-
-	const optionMap = problem.options.reduce((map, option) => {
-		map.set(option.value, option);
-		return map;
-	}, new Map<string, Option>());
-
-	return {
-		selectedOptions,
-		setSelectedOptions,
-		answeredCorrectly,
-		setAnsweredCorrectly,
-		reviewMode,
-		setReviewMode,
-		showMoreInfoOptions,
-		emptyAnswer,
-		setEmptyAnswer,
-		setShowMoreInfoOptions,
-		resetProblem,
-		handleNextProb,
-		optionMap,
-	};
+/**
+ * Helper function that returns a new map object for a given
+ * set of options that are selected
+ */
+export const getJustificationDisplay = (options: string[]) => {
+	const optionJustificationMap = new Map<string, boolean>();
+	options.map((option) => optionJustificationMap.set(option, true));
+	return optionJustificationMap;
 };
 
-export const WordDialog = ({ label, word }: { label: string; word: Word }) => {
-	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<span className='mr-1 text-sky-600 hover:underline hover:decoration-dotted hover:cursor-pointer hover:text-sky-400 transition-all'>
-					{label}
-				</span>
-			</DialogTrigger>
-			<DialogContent className='sm:max-w-[425px]'>
-				<DialogHeader>
-					<DialogTitle className='text-sky-700'>
-						{capitalize(word.word)}
-					</DialogTitle>
-					<DialogDescription>Definition</DialogDescription>
-				</DialogHeader>
-				<div>
-					{word.meanings.map((meaning, index) => {
-						return (
-							<div
-								className='text-sm font-light'
-								key={meaning.meaning + index}
-							>
-								<p className='font-tabs text-sky-600'>
-									{capitalize(meaning.type)}
-								</p>
-								<p className='font-semibold text-slate-700'>
-									{meaning.meaning}
-								</p>
-								<p className='text-pink-700'>Examples:</p>
-								<ul className='list-disc font-tabs pl-4 pr-4'>
-									{meaning.examples.map((ex) => {
-										return <li key={ex}>{ex}</li>;
-									})}
-								</ul>
-								<p className='text-pink-700'>Synonyms:</p>
-								<p className='font-tabs'>
-									{meaning.synonyms.map((synonym, index) => (
-										<>
-											{synonym}
-											{index < meaning.synonyms.length - 1
-												? ", "
-												: ""}
-										</>
-									))}
-								</p>
-							</div>
-						);
-					})}
-				</div>
-				<DialogFooter>
-					<button
-						className={`${PRIMARY_BUTTON_STYLE} text-white text-sm`}
-					>
-						Add to my list
-					</button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-	);
-};
-
-// Update selected options for MCQMultipleChoice type
-export const handleCheckboxChange = (
-	optionValue: string,
-	selectedOptions: string[],
-	setSelectedOptions: React.Dispatch<React.SetStateAction<string[]>>,
-	disabled: boolean,
-	reviewMode: boolean,
-	setShowMoreInfoOptions: React.Dispatch<
-		React.SetStateAction<Map<string, boolean>>
-	>
-) => {
-	if (disabled) {
-		return;
-	}
-	if (selectedOptions.includes(optionValue)) {
-		setSelectedOptions(
-			selectedOptions.filter((opt) => opt !== optionValue)
-		);
-		if (reviewMode) {
-			setShowMoreInfoOptions((prevShowMoreInfoOptions) => {
-				const newShowMoreInfoOptions = new Map(prevShowMoreInfoOptions);
-				newShowMoreInfoOptions.set(optionValue, false);
-				return newShowMoreInfoOptions;
-			});
-		}
-	} else {
-		setSelectedOptions([...selectedOptions, optionValue]);
-		if (reviewMode) {
-			setShowMoreInfoOptions((prevShowMoreInfoOptions) => {
-				const newShowMoreInfoOptions = new Map(prevShowMoreInfoOptions);
-				newShowMoreInfoOptions.set(optionValue, true);
-				return newShowMoreInfoOptions;
-			});
+/**
+ * Helper function that returns if the given selected options
+ * are correct or not. All correct options have to be chosen without
+ * choosing any incorrect options for it to return true
+ */
+const isAnswerCorrect = (options: string[], optionMap: Map<string, Option>) => {
+	const chosenOptions = new Set(options);
+	for (let [optionVal, option] of optionMap.entries()) {
+		if (chosenOptions.has(optionVal)) {
+			// If chosen option is incorrect
+			if (!option.correct) {
+				return false;
+			}
+		} else if (option.correct) {
+			// If a correct option is not chosen
+			return false;
 		}
 	}
+	return true;
 };
 
-// Update selected option for MCQSingleAnswer type
-export const handleRadioChange = (
-	optionValue: string,
-	setSelectedOptions: React.Dispatch<React.SetStateAction<string[]>>,
-	disabled: boolean,
-	reviewMode: boolean,
-	setShowMoreInfoOptions: React.Dispatch<
-		React.SetStateAction<Map<string, boolean>>
-	>
-) => {
-	if (disabled) {
-		return;
+/**
+ * Helper function to check for undefined variables in a sparse function
+ */
+const hasUndefinedAtRequiredIndex = (arr: any[]) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (arr[i] === undefined) {
+			return true;
+		}
 	}
-	if (reviewMode) {
-		setShowMoreInfoOptions((prevShowMoreInfoOptions) => {
-			const newShowMoreInfoOptions = new Map();
-			newShowMoreInfoOptions.set(optionValue, true);
-			return newShowMoreInfoOptions;
-		});
-	}
-	setSelectedOptions([optionValue]);
+	return false;
 };
 
-// Function that handles when a user submits
-export const checkAnswer = (
+/**
+ * Function that is called when the user clicks the submit button
+ * for a particular verbal problem
+ */
+export const handleSubmission = (
+	minRequired: number,
 	selectedOptions: string[],
 	optionMap: Map<string, Option>,
-	showMoreInfoOptions: Map<string, boolean>,
-	setShowMoreInfoOptions: React.Dispatch<
+	setNotificationMsg: React.Dispatch<React.SetStateAction<string>>,
+	setSelectedAnswers: React.Dispatch<React.SetStateAction<string[]>>,
+	setOptionJustificationDisplayMap: React.Dispatch<
 		React.SetStateAction<Map<string, boolean>>
 	>,
-	handleSubmit: (selectedOptions: string[]) => void,
-	setAnsweredCorrectly: React.Dispatch<React.SetStateAction<boolean | null>>,
-	minRequired: number,
-	setEmptyAnswer: React.Dispatch<React.SetStateAction<boolean>>
+	handleSubmit: (selectedOptions: string[]) => void
 ) => {
-	if (selectedOptions.length < minRequired) {
-		setEmptyAnswer(true);
+	if (
+		selectedOptions.length < minRequired ||
+		hasUndefinedAtRequiredIndex(selectedOptions)
+	) {
+		setNotificationMsg(
+			`Invalid submission: Requires ${minRequired} choices at the least`
+		);
 		return;
 	}
-	setEmptyAnswer(false);
-	setAnsweredCorrectly(true);
-	var chosenOptions = new Set(selectedOptions);
-	optionMap.forEach((option: Option, optionVal: string) => {
-		if (chosenOptions.has(optionVal)) {
-			setShowMoreInfoOptions((prevShowMoreInfoOptions) => {
-				const newShowMoreInfoOptions = new Map(prevShowMoreInfoOptions);
-				newShowMoreInfoOptions.set(optionVal, true);
-				return newShowMoreInfoOptions;
-			});
-			if (option.correct == false) {
-				setAnsweredCorrectly(false);
-			}
-		} else if (option.correct == true) {
-			setAnsweredCorrectly(false);
-		}
-	});
+	setSelectedAnswers(selectedOptions);
+	setOptionJustificationDisplayMap(getJustificationDisplay(selectedOptions));
+	console.log(isAnswerCorrect(selectedOptions, optionMap));
+	if (isAnswerCorrect(selectedOptions, optionMap)) {
+		setNotificationMsg("Well done! You answered correctly");
+	} else {
+		setNotificationMsg("Unfortunately you did not get that quite right");
+	}
 	handleSubmit(selectedOptions);
 };
 
-// Function that handles the displaying of the notification
+/**
+ * Function that is used to render the notification message when
+ * the user clicks the submit button
+ */
 export const renderNotification = (
-	emptyAnswer: boolean,
-	reviewMode: boolean,
-	answeredCorrectly: boolean | null
+	notificationMsg: string,
+	reviewMode: boolean
 ) => {
-	console.log(emptyAnswer);
-	if (emptyAnswer) {
+	if (notificationMsg == "" || reviewMode) {
+		return;
+	}
+	if (!notificationMsg.startsWith("Well done!")) {
 		return (
 			<p className='bg-white text-pink-700 rounded p-2 w-full text-semibold'>
-				Please select the minimum number of choices before submitting
-			</p>
-		);
-	} else if (answeredCorrectly == null || reviewMode) {
-		return null;
-	} else if (answeredCorrectly == true) {
-		return (
-			<p className='bg-white text-sky-700 rounded p-2 w-full text-semibold'>
-				Congratulations! You answered correctly. Press Next to move onto
-				a new question.
+				{notificationMsg}
 			</p>
 		);
 	} else {
 		return (
-			<div className='bg-white text-pink-700 rounded p-2 w-full text-semibold'>
-				Unfortunately! You did not get that quite right. You can press
-				inspect to review the question or skip to another question.
-			</div>
+			<p className='bg-white text-sky-700 rounded p-2 w-full text-semibold'>
+				{notificationMsg}
+			</p>
 		);
 	}
 };
 
-// Function that handles the displaying of buttons
+/**
+ * Renders the buttons that the user can interact with based
+ * on what stage of the problem the user is at.
+ */
 export const renderButtons = (
+	minRequired: number,
 	selectedOptions: string[],
-	optionMap: Map<string, Option>,
-	showMoreInfoOptions: Map<string, boolean>,
+	selectedAnswers: string[],
 	reviewMode: boolean,
-	setShowMoreInfoOptions: React.Dispatch<
+	optionMap: Map<string, Option>,
+	setOptionJustificationDisplayMap: React.Dispatch<
 		React.SetStateAction<Map<string, boolean>>
 	>,
-	setAnsweredCorrectly: React.Dispatch<React.SetStateAction<boolean | null>>,
+	setNotificationMsg: React.Dispatch<React.SetStateAction<string>>,
+	setSelectedAnswers: React.Dispatch<React.SetStateAction<string[]>>,
 	setReviewMode: React.Dispatch<React.SetStateAction<boolean>>,
-	answeredCorrectly: boolean | null,
 	handleSubmit: (selectedOptions: string[]) => void,
 	handleNext: () => void,
-	resetProblem: () => void,
-	minRequired: number,
-	setEmptyAnswer: React.Dispatch<React.SetStateAction<boolean>>
+	resetProblem: () => void
 ) => {
-	if (answeredCorrectly == null) {
+	if (selectedAnswers.length == 0) {
 		return (
 			<button
 				onClick={() =>
-					checkAnswer(
+					handleSubmission(
+						minRequired,
 						selectedOptions,
 						optionMap,
-						showMoreInfoOptions,
-						setShowMoreInfoOptions,
-						handleSubmit,
-						setAnsweredCorrectly,
-						minRequired,
-						setEmptyAnswer
+						setNotificationMsg,
+						setSelectedAnswers,
+						setOptionJustificationDisplayMap,
+						handleSubmit
 					)
 				}
 				className={`${PRIMARY_BUTTON_STYLE}`}
@@ -307,14 +152,19 @@ export const renderButtons = (
 		return (
 			<>
 				<button
-					onClick={() => setReviewMode(false)}
+					onClick={() => {
+						setReviewMode(false);
+						setOptionJustificationDisplayMap(
+							getJustificationDisplay(selectedAnswers)
+						);
+					}}
 					className={`${PRIMARY_BUTTON_STYLE}`}
 				>
 					Exit Review
 				</button>
 			</>
 		);
-	} else if (answeredCorrectly == false) {
+	} else if (!isAnswerCorrect(selectedAnswers, optionMap)) {
 		return (
 			<>
 				<button
@@ -357,129 +207,72 @@ export const renderButtons = (
 	}
 };
 
-// Display options based on the type
-export const displayOptions = (
-	answeredCorrectly: boolean | null,
+/**
+ * Renders the option display
+ */
+export const renderOptions = (
+	isRadio: boolean,
 	reviewMode: boolean,
 	options: Option[],
 	problem: VerbalProblem,
 	selectedOptions: string[],
-	showMoreInfoOptions: Map<string, boolean>,
-	setSelectedOptions: React.Dispatch<React.SetStateAction<string[]>>,
-	setShowMoreInfoOptions: React.Dispatch<
-		React.SetStateAction<Map<string, boolean>>
-	>
+	selectedAnswers: string[],
+	optionJustificationDisplayMap: Map<string, boolean>,
+	handleInputChange: (optionValue: string) => void
 ) => {
-	const disableOptions = answeredCorrectly != null && reviewMode == false;
-
-	if (
-		problem.framed_as === "MCQSingleAnswer" ||
-		problem.framed_as == "SelectSentence" ||
-		problem.type == "TextCompletion"
-	) {
-		return options.map((option, index) => (
-			<li
-				key={option.value}
-				className={`w-full mb-2 mt-2 p-2 hover:cursor-pointer flex flex-wrap items-center ${
-					index != options.length - 1
-						? "border-b border-slate-200"
-						: ""
-				}`}
-				onClick={() =>
-					handleRadioChange(
-						option.value,
-						setSelectedOptions,
-						disableOptions,
-						reviewMode,
-						setShowMoreInfoOptions
-					)
+	const disableOptions = selectedAnswers.length != 0 && reviewMode == false;
+	return options.map((option, index) => (
+		<li
+			key={option.value}
+			className={`w-full mb-2 mt-2 p-2 hover:cursor-pointer flex flex-wrap items-center ${
+				index != options.length - 1 ? "border-b border-slate-200" : ""
+			}`}
+			onClick={() => handleInputChange(option.value)}
+		>
+			<input
+				type={isRadio ? "radio" : "checkbox"}
+				value={option.value}
+				className={
+					isRadio
+						? "w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer"
+						: "w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 rounded-lg mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer"
 				}
-			>
-				<input
-					type='radio'
-					name='options'
-					value={option.value}
-					className='w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer'
-					checked={selectedOptions.includes(option.value)}
-					onChange={(e) => e.preventDefault()}
-					disabled={disableOptions}
-				/>
-				<label className='flex-grow w-5/6 hover:cursor-pointer'>
-					{!reviewMode
-						? option.value
-						: processReviewParagraph(
-								option.value,
-								problem.vocabulary,
-								problem.wordmap
-						  )}
-				</label>
-				<p
-					className={`${
-						option.correct ? "text-sky-700" : "text-pink-700"
-					}  ${
-						!showMoreInfoOptions.get(option.value)
-							? "hidden"
-							: "block"
-					} w-full font-tabs p-2 rounded mt-2 mb-2`}
-				>
-					{option.justification}
-				</p>
-			</li>
-		));
-	} else {
-		// If problem has multiple choices render them as checkboxes
-		return options.map((option, index) => (
-			<li
-				key={option.value}
-				className={`w-full mb-2 mt-2 p-2 hover:cursor-pointer flex flex-wrap items-center ${
-					index != options.length - 1
-						? "border-b border-slate-200"
-						: ""
-				}`}
-				onClick={() =>
-					handleCheckboxChange(
-						option.value,
-						selectedOptions,
-						setSelectedOptions,
-						disableOptions,
-						reviewMode,
-						setShowMoreInfoOptions
-					)
+				checked={
+					disableOptions
+						? selectedAnswers.includes(option.value)
+						: selectedOptions.includes(option.value)
 				}
+				onChange={(e) => e.preventDefault()}
+				disabled={disableOptions}
+			/>
+			<label className='flex-grow w-5/6 hover:cursor-pointer'>
+				{!reviewMode
+					? option.value
+					: renderReviewVocab(
+							option.value,
+							problem.vocabulary,
+							problem.wordmap
+					  )}
+			</label>
+			<p
+				className={`${
+					option.correct ? "text-sky-700" : "text-pink-700"
+				}  ${
+					!optionJustificationDisplayMap.get(option.value)
+						? "hidden"
+						: "block"
+				} w-full font-tabs p-2 rounded mt-2 mb-2`}
 			>
-				<input
-					type='checkbox'
-					name='options'
-					value={option.value}
-					className='w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 rounded-lg mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer'
-					checked={selectedOptions.includes(option.value)}
-					onChange={(e) => e.preventDefault()}
-					disabled={disableOptions}
-				/>
-				<label className='flex-grow w-5/6 hover:cursor-pointer'>
-					{!reviewMode
-						? option.value
-						: processReviewParagraph(
-								option.value,
-								problem.vocabulary,
-								problem.wordmap
-						  )}
-				</label>
-				<p
-					className={`${
-						option.correct ? "text-sky-700" : "text-pink-700"
-					}  ${
-						!showMoreInfoOptions.get(option.value) ? "hidden" : ""
-					} w-full flex-grow font-tabs p-2 rounded mt-2 mb-2`}
-				>
-					{option.justification}
-				</p>
-			</li>
-		));
-	}
+				{option.justification}
+			</p>
+		</li>
+	));
 };
 
-export const processReviewParagraph = (
+/**
+ * Renders the word dialog for the inspect mode
+ */
+export const renderReviewVocab = (
 	paragraph: string,
 	vocabulary: Word[],
 	variations: Map<string, string>

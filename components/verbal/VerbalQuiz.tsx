@@ -27,7 +27,7 @@ const VerbalQuiz = () => {
 		limit: 5,
 		type: "SentenceEquivalence",
 	});
-	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestion/random`;
+	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions/random`;
 
 	/**
 	 * API request used to retrieve problems to be displayed to the

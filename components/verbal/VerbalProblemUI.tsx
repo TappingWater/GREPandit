@@ -76,9 +76,9 @@ const VerbalProblemUI = ({
 		} else if (problem.type == "SentenceEquivalence") {
 			return (
 				<SentenceEquivalanceUI
-					isReviewMode={false}
 					problem={problem}
 					handleSubmit={handleSubmit}
+					handleNext={handleNext}
 				/>
 			);
 		}
