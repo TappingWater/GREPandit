@@ -7,7 +7,7 @@ import {
 	renderNotification,
 	renderReviewVocab,
 	getJustificationDisplay,
-} from "@/lib/verbalHelpers";
+} from "@/lib/helper/verbal";
 
 /**
  * Child component used by the Verbal Problem UI to
@@ -19,10 +19,12 @@ const ReadingComprehensionUI = ({
 	problem,
 	handleSubmit,
 	handleNext,
+	handleRetry,
 }: {
 	problem: VerbalProblem;
 	handleSubmit: (selectedOptions: string[]) => void;
 	handleNext: () => void;
+	handleRetry: () => void;
 }) => {
 	const {
 		selectedOptions,
@@ -35,10 +37,10 @@ const ReadingComprehensionUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
-		resetProblem,
+		handleRetryProb,
 		handleNextProb,
 		optionMap,
-	} = useVerbalProblem(problem, handleSubmit, handleNext);
+	} = useVerbalProblem(problem, handleSubmit, handleNext, handleRetry);
 
 	// Update selected options for MCQMultipleChoice type
 	const handleCheckboxChange = (optionValue: string) => {
@@ -63,7 +65,6 @@ const ReadingComprehensionUI = ({
 
 	// Update selected option for MCQSingleAnswer type
 	const handleRadioChange = (optionValue: string) => {
-		console.log(optionValue);
 		if (selectedAnswers.length != 0 && reviewMode == false) {
 			return;
 		}
@@ -134,7 +135,7 @@ const ReadingComprehensionUI = ({
 					setReviewMode,
 					handleSubmit,
 					handleNextProb,
-					resetProblem
+					handleRetryProb
 				)}
 			</div>
 		</div>

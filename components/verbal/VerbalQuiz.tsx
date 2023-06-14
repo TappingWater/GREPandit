@@ -1,20 +1,30 @@
-import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
-import { useCallback, useEffect, useState } from "react";
+import {
+	RandomQuestionRequest,
+	VerbalProblem,
+} from "@/lib/apitypes/VerbalTypes";
+import { useEffect, useState } from "react";
 import VerbalProblemUI from "./VerbalProblemUI";
-import { sendRequest } from "@/lib/sendRequest";
+import {
+	getMarkedQuestions,
+	getMarkedWords,
+	markQuestions,
+	markWords,
+	unmarkQuestions,
+	unmarkWords,
+} from "@/lib/api/userRequests";
+import {
+	addValueToSet,
+	getAddedValuesForSet,
+	getRemovedValuesForSet,
+	removeValueFromSet,
+} from "@/lib/helper/general";
+import { atom, useAtom } from "jotai";
+import { getRandomQuestions } from "@/lib/api/verbalRequests";
 
-/**
- * Interface to define the req body to be passed
- * to the API
- */
-interface RandomQuestionRequest {
-	limit: number;
-	type?: string;
-	competence?: string;
-	framed_as?: string;
-	difficulty?: string;
-	exclude_ids?: number[];
-}
+// Define global variables for these sets so they can be updated
+// from the word dialog component
+export const markedWordsAtom = atom<Set<number>>(new Set<number>());
+export const initialMarkedWordsAtom = atom<Set<number>>(new Set<number>());
 
 /**
  * Render the Quiz section of the User dashboard.
@@ -23,49 +33,124 @@ interface RandomQuestionRequest {
 const VerbalQuiz = () => {
 	const [problems, setProblems] = useState<VerbalProblem[]>([]);
 	const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-	const [data, setData] = useState<RandomQuestionRequest>({
-		limit: 5,
-		type: "SentenceEquivalence",
-	});
-	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions/random`;
-
-	/**
-	 * API request used to retrieve problems to be displayed to the
-	 * user
-	 */
-	const fetchProblems = useCallback(
-		async (data: RandomQuestionRequest) => {
-			const response = await sendRequest({
-				method: "POST",
-				url: endPoint,
-				data: data,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-			setProblems(response.data);
-			setCurrentProblemIndex(0);
-		},
-		[endPoint]
+	const [newProblemsFetched, setNewProblemsFetched] = useState(false);
+	const [markedQuestionsSet, setMarkedQuestionsSet] = useState<Set<number>>(
+		new Set()
 	);
-
-	useEffect(() => {
-		fetchProblems(data);
-	}, [fetchProblems, data]);
+	const [initialMarkedQuestionsSet, setInitialMarkedQuestionsSet] = useState<
+		Set<number>
+	>(new Set());
+	const [markedWordsSet, setMarkedWordsSet] = useAtom(markedWordsAtom);
+	const [initialMarkedWordsSet, setInitialMarkedWordsSet] = useAtom(
+		initialMarkedWordsAtom
+	);
+	const [request, setRequest] = useState<RandomQuestionRequest>({
+		limit: 5,
+	});
 
 	const handleProblemCompleted = () => {
 		// If there are more problems, go to next. Otherwise, fetch new problems.
-		console.log(currentProblemIndex);
-		if (currentProblemIndex < problems.length - 1) {
-			setCurrentProblemIndex((curr) => curr + 1);
-			console.log(problems);
+		if (currentProblemIndex == problems.length - 1) {
+			getRandomQuestions(request).then((problems) => {
+				setProblems((oldProblems) => [...oldProblems, ...problems]);
+			});
+			setNewProblemsFetched(true);
+		}
+		setCurrentProblemIndex((curr) => curr + 1);
+	};
+
+	// Modify handleMarkQuestion to add the question id to the Set of marked questions
+	const toggleMarkedQuestion = () => {
+		const qid = problems[currentProblemIndex].id;
+		if (markedQuestionsSet.has(qid)) {
+			setMarkedQuestionsSet(removeValueFromSet(markedQuestionsSet, qid));
 		} else {
-			fetchProblems(data);
+			setMarkedQuestionsSet(addValueToSet(markedQuestionsSet, qid));
 		}
 	};
 
+	/**
+	 * Update marked questions for user
+	 */
+	const updateMarkedQuestions = async () => {
+		const newlyMarkedQuestions = getAddedValuesForSet(
+			initialMarkedQuestionsSet,
+			markedQuestionsSet
+		);
+		const newlyRemovedQuestions = getRemovedValuesForSet(
+			initialMarkedQuestionsSet,
+			markedQuestionsSet
+		);
+		console.log("marking questions");
+		console.log(newlyMarkedQuestions);
+		console.log(Array.from(markedQuestionsSet));
+		console.log("initial" + Array.from(initialMarkedQuestionsSet));
+		if (newlyMarkedQuestions.length > 0) {
+			markQuestions(newlyMarkedQuestions);
+		}
+		if (newlyRemovedQuestions.length > 0) {
+			unmarkQuestions(newlyRemovedQuestions);
+		}
+		setInitialMarkedQuestionsSet(new Set(markedQuestionsSet));
+	};
+
+	/**
+	 * Update marked words for user
+	 */
+	const updateMarkedWords = async () => {
+		const newlyMarkedWords = getAddedValuesForSet(
+			initialMarkedWordsSet,
+			markedWordsSet
+		);
+		const newlyRemovedWords = getRemovedValuesForSet(
+			initialMarkedWordsSet,
+			markedWordsSet
+		);
+		console.log(newlyMarkedWords);
+		console.log("marking");
+		if (newlyMarkedWords.length > 0) {
+			markWords(newlyMarkedWords);
+		}
+		if (newlyRemovedWords.length > 0) {
+			unmarkWords(newlyRemovedWords);
+		}
+		setInitialMarkedWordsSet(new Set(markedWordsSet));
+	};
+
+	useEffect(() => {
+		updateMarkedQuestions();
+		updateMarkedWords();
+		setNewProblemsFetched(false);
+	}, [newProblemsFetched]);
+
+	// Get marked questions when the component mounts
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				// Fetch initial data
+				const [markedQuestions, markedWords, problems] =
+					await Promise.all([
+						getMarkedQuestions(),
+						getMarkedWords(),
+						getRandomQuestions(request),
+					]);
+				// Update state with fetched data
+				setMarkedQuestionsSet(new Set(markedQuestions));
+				setInitialMarkedQuestionsSet(new Set(markedQuestions));
+				setMarkedWordsSet(new Set(markedWords));
+				setInitialMarkedQuestionsSet(new Set(markedWords));
+				setProblems(problems);
+				setCurrentProblemIndex(0);
+				setNewProblemsFetched(true);
+			} catch (error) {
+				console.error("Error fetching initial data:", error);
+			}
+		};
+		fetchData();
+	}, []);
+
 	// Don't render anything if problems haven't loaded yet
-	if (!problems) {
+	if (!problems[currentProblemIndex]) {
 		return null;
 	} else {
 		return (
@@ -74,6 +159,10 @@ const VerbalQuiz = () => {
 					<VerbalProblemUI
 						problem={problems[currentProblemIndex]}
 						onProblemCompleted={handleProblemCompleted}
+						onToggleMarkQuestion={toggleMarkedQuestion}
+						isQuestionMarked={markedQuestionsSet.has(
+							problems[currentProblemIndex].id
+						)}
 					/>
 				) : (
 					<div>loading</div>

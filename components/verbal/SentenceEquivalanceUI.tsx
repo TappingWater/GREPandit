@@ -8,7 +8,7 @@ import {
 	renderNotification,
 	renderReviewVocab,
 	getJustificationDisplay,
-} from "@/lib/verbalHelpers";
+} from "@/lib/helper/verbal";
 
 /**
  * Component used to render a verbal question problem with the type
@@ -18,10 +18,12 @@ const SentenceEquivalanceUI = ({
 	problem,
 	handleSubmit,
 	handleNext,
+	handleRetry,
 }: {
 	problem: VerbalProblem;
 	handleSubmit: (selectedOptions: string[]) => void;
 	handleNext: () => void;
+	handleRetry: () => void;
 }) => {
 	const {
 		selectedOptions,
@@ -34,10 +36,10 @@ const SentenceEquivalanceUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
-		resetProblem,
+		handleRetryProb,
 		handleNextProb,
 		optionMap,
-	} = useVerbalProblem(problem, handleSubmit, handleNext);
+	} = useVerbalProblem(problem, handleSubmit, handleNext, handleRetry);
 	const [displaySelection, setDisplayedSelection] =
 		useState<string>("              ");
 	useEffect(() => {
@@ -46,9 +48,10 @@ const SentenceEquivalanceUI = ({
 		}
 	}, [reviewMode, selectedAnswers]);
 
-	const resetThisProb = () => {
-		resetProblem();
+	const handleRetrySentenceProb = () => {
+		handleRetryProb();
 		setDisplayedSelection("              ");
+		handleRetry();
 	};
 
 	const splitParagraphIntoBlanks = (paragraph?: string) => {
@@ -135,7 +138,7 @@ const SentenceEquivalanceUI = ({
 					setReviewMode,
 					handleSubmit,
 					handleNextProb,
-					resetThisProb
+					handleRetrySentenceProb
 				)}
 			</div>
 		</div>

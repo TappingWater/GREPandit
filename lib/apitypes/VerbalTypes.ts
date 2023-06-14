@@ -50,3 +50,16 @@ export type Option = {
 	correct: boolean;
 	justification: string;
 };
+
+/**
+ * Interface to define the req body to be passed
+ * to the API
+ */
+export type RandomQuestionRequest = {
+	limit: number;
+	type?: string;
+	competence?: string;
+	framed_as?: string;
+	difficulty?: string;
+	exclude_ids?: number[];
+};

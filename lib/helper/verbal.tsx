@@ -1,5 +1,5 @@
 import { VerbalProblem, Option, Word } from "@/lib/apitypes/VerbalTypes";
-import { removePunctuation } from "./helpers";
+import { removePunctuation } from "./general";
 import WordDialog from "@/components/verbal/WordDialog";
 
 const PRIMARY_BUTTON_STYLE =
@@ -283,7 +283,6 @@ export const renderReviewVocab = (
 	const variationMap = new Map(Object.entries(variations));
 	// Convert vocabulary array to map for easy access
 	const vocabMap = new Map<string, Word>();
-	console.log(variationMap);
 	vocabulary.forEach((word) => vocabMap.set(word.word, word));
 	// Split the paragraph into words
 	const words = paragraph.split(" ");

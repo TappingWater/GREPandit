@@ -13,8 +13,8 @@ import {
 	renderNotification,
 	renderReviewVocab,
 	getJustificationDisplay,
-} from "@/lib/verbalHelpers";
-import { capitalize } from "@/lib/helpers";
+} from "@/lib/helper/verbal";
+import { capitalize } from "@/lib/helper/general";
 
 /**
  * Component for rendering verbal problems where user has
@@ -24,10 +24,12 @@ const TextCompletionUI = ({
 	problem,
 	handleSubmit,
 	handleNext,
+	handleRetry,
 }: {
 	problem: VerbalProblem;
 	handleSubmit: (selectedOptions: string[]) => void;
 	handleNext: () => void;
+	handleRetry: () => void;
 }) => {
 	const splitParagraphIntoBlanks = (paragraph?: string) => {
 		return paragraph ? paragraph.split("{BLANK}") : [];
@@ -48,10 +50,10 @@ const TextCompletionUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
-		resetProblem,
+		handleRetryProb,
 		handleNextProb,
 		optionMap,
-	} = useVerbalProblem(problem, handleSubmit, handleNext);
+	} = useVerbalProblem(problem, handleSubmit, handleNext, handleRetry);
 
 	const handleSelectChange = (index: number, value: string) => {
 		if (selectedAnswers.length != 0 && reviewMode == false) {
@@ -103,7 +105,6 @@ const TextCompletionUI = ({
 	};
 
 	const generateParagraphWithBlanks = () => {
-		console.log(selectedOptions);
 		return (
 			<p className={`${PARAGRAPH_STYLE} p-2 md:p-4 leading-8`}>
 				{blanks.map((blank, index) => (
@@ -219,7 +220,7 @@ const TextCompletionUI = ({
 					setReviewMode,
 					handleSubmit,
 					handleNextProb,
-					resetProblem
+					handleRetryProb
 				)}
 			</div>
 		</div>

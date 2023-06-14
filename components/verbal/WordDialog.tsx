@@ -8,15 +8,28 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Word } from "@/lib/apitypes/VerbalTypes";
-import { capitalize } from "@/lib/helpers";
-
-const PRIMARY_BUTTON_STYLE =
-	"min-w-[80px] bg-sky-700 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-sky-600 active:bg-sky-400 active:shadow-inner transition-all";
+import {
+	addValueToSet,
+	capitalize,
+	removeValueFromSet,
+} from "@/lib/helper/general";
+import { markedWordsAtom } from "./VerbalQuiz";
+import { useAtom } from "jotai";
+import CheckedButton from "../ui/CheckedButton";
 
 /**
  * Used to render a react component for a modal that is displayed
  */
 const WordDialog = ({ label, word }: { label: string; word: Word }) => {
+	const [markedWords, setMarkedWords] = useAtom(markedWordsAtom);
+	const toggleMarkWord = () => {
+		if (markedWords.has(word.id)) {
+			setMarkedWords(removeValueFromSet(markedWords, word.id));
+		} else {
+			setMarkedWords(addValueToSet(markedWords, word.id));
+		}
+	};
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -66,11 +79,15 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 					})}
 				</div>
 				<DialogFooter>
-					<button
-						className={`${PRIMARY_BUTTON_STYLE} text-white text-sm`}
-					>
-						Add to my list
-					</button>
+					<CheckedButton
+						onClick={toggleMarkWord}
+						isChecked={markedWords.has(word.id)}
+						checkedText='Marked'
+						uncheckedText='Mark word'
+						checkedStyles='shadow-inner shadow-sky-500'
+						unCheckedStyles='shadow-large shadow-sky-500'
+						toolTipText='Marked questions can be reviewed later'
+					></CheckedButton>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

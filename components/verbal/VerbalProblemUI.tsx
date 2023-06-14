@@ -1,10 +1,13 @@
 import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
 import ReadingComprehensionUI from "./ReadingComprehensionUI";
 import SelectInPassageUI from "./SelectInPassageUI";
-import { HEADING_STYLE, UI_STYLE } from "@/lib/styles";
-import { insertSpacesBeforeCapitals } from "@/lib/helpers";
+import { HEADING_STYLE } from "@/lib/styles";
+import { insertSpacesBeforeCapitals } from "@/lib/helper/general";
 import TextCompletionUI from "./TextCompletion";
 import SentenceEquivalanceUI from "./SentenceEquivalanceUI";
+import { useRef, useState } from "react";
+import Timer, { TimerHandle } from "../ui/Timer";
+import CheckedButton from "../ui/CheckedButton";
 
 /**
  * Component used to render a singular verbal problem by the Quiz
@@ -13,10 +16,17 @@ import SentenceEquivalanceUI from "./SentenceEquivalanceUI";
 const VerbalProblemUI = ({
 	problem,
 	onProblemCompleted,
+	onToggleMarkQuestion,
+	isQuestionMarked,
 }: {
 	problem: VerbalProblem;
 	onProblemCompleted: () => void;
+	onToggleMarkQuestion: () => void;
+	isQuestionMarked: boolean;
 }) => {
+	const [timerDate, setTimerDate] = useState(new Date(Date.now()));
+	const timerRef = useRef<TimerHandle | null>(null);
+
 	/**
 	 * Function that is used when handling a problem submission.
 	 * User stats are sent to the endpoint for saving
@@ -24,16 +34,11 @@ const VerbalProblemUI = ({
 	const handleSubmit = (selectedOptions: string[]) => {
 		// Your logic for when the problem is answered
 		// Then, signal that the problem has been completed:
-		console.log("Submitted");
-		console.log(selectedOptions);
-	};
-
-	/**
-	 * Function that is used when user wants to mark a problem
-	 * for later
-	 */
-	const handleMarkQuestion = (questionId: number) => {
-		console.log(questionId);
+		// Pause the timer and log the elapsed time
+		if (timerRef.current) {
+			timerRef.current.pause(); // pause the timer
+			const elapsedTime = timerRef.current.getElapsedTime();
+		}
 	};
 
 	/**
@@ -41,8 +46,19 @@ const VerbalProblemUI = ({
 	 * on to the next question
 	 */
 	const handleNext = () => {
-		console.log("NEXT");
+		if (timerRef.current) {
+			timerRef.current.reset();
+		}
 		onProblemCompleted();
+		setTimerDate(new Date(Date.now()));
+	};
+
+	/**
+	 * Function that is used when the user wants to retry
+	 * a problem
+	 */
+	const handleRetry = () => {
+		setTimerDate(new Date(Date.now()));
 	};
 
 	/**
@@ -55,6 +71,7 @@ const VerbalProblemUI = ({
 					problem={problem}
 					handleSubmit={handleSubmit}
 					handleNext={handleNext}
+					handleRetry={handleRetry}
 				/>
 			);
 		} else if (problem.type == "ReadingComprehension") {
@@ -63,6 +80,7 @@ const VerbalProblemUI = ({
 					problem={problem}
 					handleSubmit={handleSubmit}
 					handleNext={handleNext}
+					handleRetry={handleRetry}
 				/>
 			);
 		} else if (problem.type == "TextCompletion") {
@@ -71,6 +89,7 @@ const VerbalProblemUI = ({
 					problem={problem}
 					handleSubmit={handleSubmit}
 					handleNext={handleNext}
+					handleRetry={handleRetry}
 				/>
 			);
 		} else if (problem.type == "SentenceEquivalence") {
@@ -79,6 +98,7 @@ const VerbalProblemUI = ({
 					problem={problem}
 					handleSubmit={handleSubmit}
 					handleNext={handleNext}
+					handleRetry={handleRetry}
 				/>
 			);
 		}
@@ -114,10 +134,29 @@ const VerbalProblemUI = ({
 	if (problem) {
 		return (
 			<div className={"m-auto font-text w-[90%] md:w-[85%]"}>
-				<h2 className={`${HEADING_STYLE} text-sm`}>
-					{insertSpacesBeforeCapitals(problem.type)}
-				</h2>
-				{renderProblemDifficulty()}
+				<div className='flex flex-row'>
+					<h2 className={`${HEADING_STYLE} text-sm w-[60%]`}>
+						{insertSpacesBeforeCapitals(
+							problem.type + ": " + problem.id
+						)}
+						{renderProblemDifficulty()}
+						<Timer
+							ref={timerRef}
+							time={new Date(Date.now())}
+						></Timer>
+					</h2>
+					<div className='flex-grow flex flex-row justify-end'>
+						<CheckedButton
+							onClick={onToggleMarkQuestion}
+							isChecked={isQuestionMarked}
+							checkedText='Marked'
+							uncheckedText='Mark Question'
+							checkedStyles='shadow-inner shadow-sky-500'
+							unCheckedStyles='shadow-large shadow-sky-500'
+							toolTipText='Marked questions can be reviewed later'
+						></CheckedButton>
+					</div>
+				</div>
 				{renderProblem(problem)}
 			</div>
 		);

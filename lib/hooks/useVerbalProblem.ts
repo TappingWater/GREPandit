@@ -8,7 +8,8 @@ import { useState } from "react";
 const useVerbalProblem = (
 	problem: VerbalProblem,
 	handleSubmit: (selectedOptions: string[]) => void,
-	handleNext: () => void
+	handleNext: () => void,
+	handleRetry: () => void
 ) => {
 	const createInitialInfoMap = () => {
 		const infoMap = new Map<string, boolean>();
@@ -28,6 +29,11 @@ const useVerbalProblem = (
 		setNotificationMsg("");
 		setReviewMode(false);
 		setOptionJustificationDisplayMap(createInitialInfoMap());
+	};
+
+	const handleRetryProb = () => {
+		handleRetry();
+		resetProblem();
 	};
 
 	const handleNextProb = () => {
@@ -51,7 +57,7 @@ const useVerbalProblem = (
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
-		resetProblem,
+		handleRetryProb,
 		handleNextProb,
 		optionMap,
 	};

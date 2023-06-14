@@ -7,8 +7,8 @@ import {
 	renderNotification,
 	renderReviewVocab,
 	getJustificationDisplay,
-} from "@/lib/verbalHelpers";
-import { normalizeText } from "@/lib/helpers";
+} from "@/lib/helper/verbal";
+import { normalizeText } from "@/lib/helper/general";
 
 /**
  * Component used to render verbal problems where user has to select a sentence
@@ -18,10 +18,12 @@ const SelectInPassageUI = ({
 	problem,
 	handleSubmit,
 	handleNext,
+	handleRetry,
 }: {
 	problem: VerbalProblem;
 	handleSubmit: (selectedOptions: string[]) => void;
 	handleNext: () => void;
+	handleRetry: () => void;
 }) => {
 	const {
 		selectedOptions,
@@ -34,10 +36,10 @@ const SelectInPassageUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
-		resetProblem,
+		handleRetryProb,
 		handleNextProb,
 		optionMap,
-	} = useVerbalProblem(problem, handleSubmit, handleNext);
+	} = useVerbalProblem(problem, handleSubmit, handleNext, handleRetry);
 
 	// Create a mapping from normalized sentence to its corresponding option
 	const sentenceToOption = new Map();
@@ -132,7 +134,7 @@ const SelectInPassageUI = ({
 					setReviewMode,
 					handleSubmit,
 					handleNextProb,
-					resetProblem
+					handleRetryProb
 				)}
 			</div>
 		</div>
