@@ -20,7 +20,10 @@ export const getJustificationDisplay = (options: string[]) => {
  * are correct or not. All correct options have to be chosen without
  * choosing any incorrect options for it to return true
  */
-const isAnswerCorrect = (options: string[], optionMap: Map<string, Option>) => {
+export const isAnswerCorrect = (
+	options: string[],
+	optionMap: Map<string, Option>
+) => {
 	const chosenOptions = new Set(options);
 	for (let [optionVal, option] of optionMap.entries()) {
 		if (chosenOptions.has(optionVal)) {
@@ -61,7 +64,7 @@ export const handleSubmission = (
 	setOptionJustificationDisplayMap: React.Dispatch<
 		React.SetStateAction<Map<string, boolean>>
 	>,
-	handleSubmit: (selectedOptions: string[]) => void
+	handleSubmit: () => void
 ) => {
 	if (
 		selectedOptions.length < minRequired ||
@@ -80,7 +83,7 @@ export const handleSubmission = (
 	} else {
 		setNotificationMsg("Unfortunately you did not get that quite right");
 	}
-	handleSubmit(selectedOptions);
+	handleSubmit();
 };
 
 /**
@@ -125,7 +128,7 @@ export const renderButtons = (
 	setNotificationMsg: React.Dispatch<React.SetStateAction<string>>,
 	setSelectedAnswers: React.Dispatch<React.SetStateAction<string[]>>,
 	setReviewMode: React.Dispatch<React.SetStateAction<boolean>>,
-	handleSubmit: (selectedOptions: string[]) => void,
+	handleSubmit: () => void,
 	handleNext: () => void,
 	resetProblem: () => void
 ) => {

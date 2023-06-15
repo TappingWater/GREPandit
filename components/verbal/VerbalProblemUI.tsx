@@ -1,4 +1,4 @@
-import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import ReadingComprehensionUI from "./ReadingComprehensionUI";
 import SelectInPassageUI from "./SelectInPassageUI";
 import { HEADING_STYLE } from "@/lib/styles";
@@ -8,6 +8,8 @@ import SentenceEquivalanceUI from "./SentenceEquivalanceUI";
 import { useRef, useState } from "react";
 import Timer, { TimerHandle } from "../ui/Timer";
 import CheckedButton from "../ui/CheckedButton";
+import { createVerbalStat } from "@/lib/api/verbalStatRequests";
+import { isAnswerCorrect } from "@/lib/helper/verbal";
 
 /**
  * Component used to render a singular verbal problem by the Quiz
@@ -26,18 +28,30 @@ const VerbalProblemUI = ({
 }) => {
 	const [timerDate, setTimerDate] = useState(new Date(Date.now()));
 	const timerRef = useRef<TimerHandle | null>(null);
+	const [retyingProblem, setRetryingProblem] = useState(false);
 
 	/**
 	 * Function that is used when handling a problem submission.
 	 * User stats are sent to the endpoint for saving
 	 */
-	const handleSubmit = (selectedOptions: string[]) => {
+	const handleSubmit = (
+		selectedOptions: string[],
+		optionMap: Map<string, Option>
+	) => {
 		// Your logic for when the problem is answered
 		// Then, signal that the problem has been completed:
 		// Pause the timer and log the elapsed time
 		if (timerRef.current) {
 			timerRef.current.pause(); // pause the timer
 			const elapsedTime = timerRef.current.getElapsedTime();
+		}
+		if (!retyingProblem) {
+			createVerbalStat(
+				problem.id,
+				isAnswerCorrect(selectedOptions, optionMap),
+				selectedOptions,
+				timerRef.current!.getElapsedTime()
+			);
 		}
 	};
 
@@ -49,6 +63,7 @@ const VerbalProblemUI = ({
 		if (timerRef.current) {
 			timerRef.current.reset();
 		}
+		setRetryingProblem(false);
 		onProblemCompleted();
 		setTimerDate(new Date(Date.now()));
 	};
@@ -58,6 +73,7 @@ const VerbalProblemUI = ({
 	 * a problem
 	 */
 	const handleRetry = () => {
+		setRetryingProblem(true);
 		setTimerDate(new Date(Date.now()));
 	};
 

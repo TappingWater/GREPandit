@@ -1,4 +1,4 @@
-import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
 import { PARAGRAPH_STYLE } from "@/lib/styles";
 import {
@@ -21,7 +21,10 @@ const SelectInPassageUI = ({
 	handleRetry,
 }: {
 	problem: VerbalProblem;
-	handleSubmit: (selectedOptions: string[]) => void;
+	handleSubmit: (
+		selectedOptions: string[],
+		optionMap: Map<string, Option>
+	) => void;
 	handleNext: () => void;
 	handleRetry: () => void;
 }) => {
@@ -36,6 +39,7 @@ const SelectInPassageUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
+		handleSubmitProb,
 		handleRetryProb,
 		handleNextProb,
 		optionMap,
@@ -132,7 +136,7 @@ const SelectInPassageUI = ({
 					setNotificationMsg,
 					setSelectedAnswers,
 					setReviewMode,
-					handleSubmit,
+					handleSubmitProb,
 					handleNextProb,
 					handleRetryProb
 				)}

@@ -1,4 +1,4 @@
-import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
 import { useEffect, useState } from "react";
 import { PARAGRAPH_STYLE } from "@/lib/styles";
@@ -21,7 +21,10 @@ const SentenceEquivalanceUI = ({
 	handleRetry,
 }: {
 	problem: VerbalProblem;
-	handleSubmit: (selectedOptions: string[]) => void;
+	handleSubmit: (
+		selectedOptions: string[],
+		optionMap: Map<string, Option>
+	) => void;
 	handleNext: () => void;
 	handleRetry: () => void;
 }) => {
@@ -36,6 +39,7 @@ const SentenceEquivalanceUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
+		handleSubmitProb,
 		handleRetryProb,
 		handleNextProb,
 		optionMap,
@@ -136,7 +140,7 @@ const SentenceEquivalanceUI = ({
 					setNotificationMsg,
 					setSelectedAnswers,
 					setReviewMode,
-					handleSubmit,
+					handleSubmitProb,
 					handleNextProb,
 					handleRetrySentenceProb
 				)}

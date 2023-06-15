@@ -1,4 +1,4 @@
-import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import useVerbalProblem from "@/lib/hooks/useVerbalProblem";
 import { PARAGRAPH_STYLE } from "@/lib/styles";
 import {
@@ -27,7 +27,10 @@ const TextCompletionUI = ({
 	handleRetry,
 }: {
 	problem: VerbalProblem;
-	handleSubmit: (selectedOptions: string[]) => void;
+	handleSubmit: (
+		selectedOptions: string[],
+		optionMap: Map<string, Option>
+	) => void;
 	handleNext: () => void;
 	handleRetry: () => void;
 }) => {
@@ -50,6 +53,7 @@ const TextCompletionUI = ({
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
+		handleSubmitProb,
 		handleRetryProb,
 		handleNextProb,
 		optionMap,
@@ -158,6 +162,7 @@ const TextCompletionUI = ({
 			</p>
 		);
 	};
+
 	const renderReviewNotification = () => {
 		if (reviewMode) {
 			return (
@@ -218,7 +223,7 @@ const TextCompletionUI = ({
 					setNotificationMsg,
 					setSelectedAnswers,
 					setReviewMode,
-					handleSubmit,
+					handleSubmitProb,
 					handleNextProb,
 					handleRetryProb
 				)}

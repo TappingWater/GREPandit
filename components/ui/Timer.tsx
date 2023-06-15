@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 export interface TimerHandle {
-	getElapsedTime: () => Date;
+	getElapsedTime: () => number;
 	pause: () => void;
 	reset: () => void;
 }
@@ -22,8 +22,11 @@ const Timer = forwardRef<TimerHandle, { time: Date }>(({ time }, ref) => {
 	const [displayTime, setDisplayTime] = useState<string>("0:00");
 
 	useImperativeHandle(ref, () => ({
-		getElapsedTime: () =>
-			new Date(new Date().getTime() - startTime.current.getTime()),
+		getElapsedTime: () => {
+			const elapsedTime =
+				new Date().getTime() - startTime.current.getTime();
+			return elapsedTime;
+		},
 		pause: () => {
 			if (intervalId.current) {
 				clearInterval(intervalId.current);

@@ -2,7 +2,7 @@ import {
 	RandomQuestionRequest,
 	VerbalProblem,
 } from "@/lib/apitypes/VerbalTypes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VerbalProblemUI from "./VerbalProblemUI";
 import {
 	getMarkedQuestions,
@@ -44,6 +44,10 @@ const VerbalQuiz = () => {
 	const [initialMarkedWordsSet, setInitialMarkedWordsSet] = useAtom(
 		initialMarkedWordsAtom
 	);
+	const markedQuestionsSetRef = useRef<Set<number>>(new Set());
+	const markedWordsSetRef = useRef<Set<number>>(new Set());
+	const initMarkedQuestionsSetRef = useRef<Set<number>>(new Set());
+	const initMarkedWordsSetRef = useRef<Set<number>>(new Set());
 	const [request, setRequest] = useState<RandomQuestionRequest>({
 		limit: 5,
 	});
@@ -73,48 +77,48 @@ const VerbalQuiz = () => {
 	 * Update marked questions for user
 	 */
 	const updateMarkedQuestions = async () => {
+		const currentMarkedQuestionsSet = new Set(
+			markedQuestionsSetRef.current
+		);
+		const initialSet = new Set(initMarkedQuestionsSetRef.current);
 		const newlyMarkedQuestions = getAddedValuesForSet(
-			initialMarkedQuestionsSet,
-			markedQuestionsSet
+			initialSet,
+			currentMarkedQuestionsSet
 		);
 		const newlyRemovedQuestions = getRemovedValuesForSet(
-			initialMarkedQuestionsSet,
-			markedQuestionsSet
+			initialSet,
+			currentMarkedQuestionsSet
 		);
-		console.log("marking questions");
-		console.log(newlyMarkedQuestions);
-		console.log(Array.from(markedQuestionsSet));
-		console.log("initial" + Array.from(initialMarkedQuestionsSet));
 		if (newlyMarkedQuestions.length > 0) {
 			markQuestions(newlyMarkedQuestions);
 		}
 		if (newlyRemovedQuestions.length > 0) {
 			unmarkQuestions(newlyRemovedQuestions);
 		}
-		setInitialMarkedQuestionsSet(new Set(markedQuestionsSet));
+		setInitialMarkedQuestionsSet(new Set(currentMarkedQuestionsSet));
 	};
 
 	/**
 	 * Update marked words for user
 	 */
 	const updateMarkedWords = async () => {
+		const currentMarkedWordsSet = new Set(markedWordsSetRef.current);
+		const initialSet = new Set(initMarkedWordsSetRef.current);
 		const newlyMarkedWords = getAddedValuesForSet(
-			initialMarkedWordsSet,
-			markedWordsSet
+			initialSet,
+			currentMarkedWordsSet
 		);
 		const newlyRemovedWords = getRemovedValuesForSet(
-			initialMarkedWordsSet,
-			markedWordsSet
+			initialSet,
+			currentMarkedWordsSet
 		);
-		console.log(newlyMarkedWords);
-		console.log("marking");
 		if (newlyMarkedWords.length > 0) {
 			markWords(newlyMarkedWords);
 		}
 		if (newlyRemovedWords.length > 0) {
 			unmarkWords(newlyRemovedWords);
 		}
-		setInitialMarkedWordsSet(new Set(markedWordsSet));
+		setInitialMarkedWordsSet(currentMarkedWordsSet);
 	};
 
 	useEffect(() => {
@@ -125,6 +129,7 @@ const VerbalQuiz = () => {
 
 	// Get marked questions when the component mounts
 	useEffect(() => {
+		// Fetch data when component  is first mounted
 		const fetchData = async () => {
 			try {
 				// Fetch initial data
@@ -138,7 +143,7 @@ const VerbalQuiz = () => {
 				setMarkedQuestionsSet(new Set(markedQuestions));
 				setInitialMarkedQuestionsSet(new Set(markedQuestions));
 				setMarkedWordsSet(new Set(markedWords));
-				setInitialMarkedQuestionsSet(new Set(markedWords));
+				setInitialMarkedWordsSet(new Set(markedWords));
 				setProblems(problems);
 				setCurrentProblemIndex(0);
 				setNewProblemsFetched(true);
@@ -147,7 +152,34 @@ const VerbalQuiz = () => {
 			}
 		};
 		fetchData();
+		// Clean up function
+		return () => {
+			(async () => {
+				try {
+					updateMarkedQuestions();
+					updateMarkedWords();
+				} catch (error) {
+					console.error(error);
+				}
+			})();
+		};
 	}, []);
+
+	useEffect(() => {
+		markedQuestionsSetRef.current = markedQuestionsSet;
+	}, [markedQuestionsSet]);
+
+	useEffect(() => {
+		markedWordsSetRef.current = markedWordsSet;
+	}, [markedWordsSet]);
+
+	useEffect(() => {
+		initMarkedQuestionsSetRef.current = initialMarkedQuestionsSet;
+	}, [initialMarkedQuestionsSet]);
+
+	useEffect(() => {
+		initMarkedWordsSetRef.current = initialMarkedWordsSet;
+	}, [initialMarkedWordsSet]);
 
 	// Don't render anything if problems haven't loaded yet
 	if (!problems[currentProblemIndex]) {

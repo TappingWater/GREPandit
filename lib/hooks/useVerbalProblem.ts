@@ -1,5 +1,7 @@
 import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import { useState } from "react";
+import { createVerbalStat } from "../api/verbalStatRequests";
+import { isAnswerCorrect } from "../helper/verbal";
 
 /**
  * React hook used to manage common state variables for verbal
@@ -7,7 +9,10 @@ import { useState } from "react";
  */
 const useVerbalProblem = (
 	problem: VerbalProblem,
-	handleSubmit: (selectedOptions: string[]) => void,
+	handleSubmit: (
+		selectedOptions: string[],
+		optionMap: Map<string, Option>
+	) => void,
 	handleNext: () => void,
 	handleRetry: () => void
 ) => {
@@ -22,6 +27,10 @@ const useVerbalProblem = (
 	const [notificationMsg, setNotificationMsg] = useState<string>("");
 	const [optionJustificationDisplayMap, setOptionJustificationDisplayMap] =
 		useState<Map<string, boolean>>(createInitialInfoMap());
+	const optionMap = problem.options.reduce((map, option) => {
+		map.set(option.value, option);
+		return map;
+	}, new Map<string, Option>());
 
 	const resetProblem = () => {
 		setSelectedOptions([]);
@@ -41,10 +50,9 @@ const useVerbalProblem = (
 		resetProblem();
 	};
 
-	const optionMap = problem.options.reduce((map, option) => {
-		map.set(option.value, option);
-		return map;
-	}, new Map<string, Option>());
+	const handleSubmitProb = () => {
+		handleSubmit(selectedOptions, optionMap);
+	};
 
 	return {
 		selectedOptions,
@@ -57,6 +65,7 @@ const useVerbalProblem = (
 		setReviewMode,
 		optionJustificationDisplayMap,
 		setOptionJustificationDisplayMap,
+		handleSubmitProb,
 		handleRetryProb,
 		handleNextProb,
 		optionMap,

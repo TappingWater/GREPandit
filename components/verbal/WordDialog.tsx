@@ -59,19 +59,19 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 								</p>
 								<p className='text-pink-700'>Examples:</p>
 								<ul className='list-disc font-tabs pl-4 pr-4'>
-									{meaning.examples.map((ex) => {
-										return <li key={ex}>{ex}</li>;
+									{meaning.examples.map((ex, index) => {
+										return <li key={ex + index}>{ex}</li>;
 									})}
 								</ul>
 								<p className='text-pink-700'>Synonyms:</p>
 								<p className='font-tabs'>
 									{meaning.synonyms.map((synonym, index) => (
-										<>
+										<span key={index}>
 											{synonym}
 											{index < meaning.synonyms.length - 1
 												? ", "
 												: ""}
-										</>
+										</span>
 									))}
 								</p>
 							</div>
