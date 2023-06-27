@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { sendRequest, IRequestOptions } from "./requests";
 import { MarkedQuestionResponse, MarkedWordResponse } from "../apitypes/User";
+import { Word } from "../apitypes/VerbalTypes";
 
 /**
  * Create a user when first signs up or logs in if they
@@ -98,7 +99,7 @@ export const markQuestions = async (questionIds: number[]) => {
 /**
  * Allows the user to retrieve the list of words they have marked to review
  */
-export const getMarkedWords = async (attempts = 0): Promise<number[]> => {
+export const getMarkedWords = async (attempts = 0): Promise<Word[]> => {
 	const url = `${process.env.NEXT_PUBLIC_API_BASE}/users/marked-words`;
 	const requestOptions: IRequestOptions = {
 		method: "GET",
@@ -107,7 +108,7 @@ export const getMarkedWords = async (attempts = 0): Promise<number[]> => {
 
 	try {
 		const response = await sendRequest(requestOptions);
-		return response.data.map((item: MarkedWordResponse) => item.word_id);
+		return response.data.map((item: MarkedWordResponse) => item.word);
 	} catch (error) {
 		console.error(
 			`Error on attempt ${attempts} to get marked questions:`,
@@ -202,4 +203,30 @@ export const unmarkQuestions = async (questionIds: number[]) => {
 			}
 		}
 	}, 30 * 1000);
+};
+
+/**
+ * Retrieve the list of words in the questions that the user answered incorrectly
+ */
+export const getProblematicWords = async (attempts = 0): Promise<Word[]> => {
+	const url = `${process.env.NEXT_PUBLIC_API_BASE}/users/problematic-words`;
+	const requestOptions: IRequestOptions = {
+		method: "GET",
+		url: url,
+	};
+	try {
+		const response = await sendRequest(requestOptions);
+		return response.data.map((item: Word) => item);
+	} catch (error) {
+		console.error(
+			`Error on attempt ${attempts} to get marked questions:`,
+			error
+		);
+		if (attempts >= 3) {
+			throw new Error("Could not get marked questions after 3 attempts");
+		}
+		// Wait for 30 seconds before trying again
+		await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
+		return getMarkedWords(attempts + 1);
+	}
 };

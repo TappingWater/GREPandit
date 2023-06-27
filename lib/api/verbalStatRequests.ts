@@ -1,4 +1,4 @@
-import { VerbalStatRequest } from "../apitypes/VerbalStats";
+import { VerbalStatRequest } from "../apitypes/VerbalTypes";
 import { sendRequest } from "./requests";
 
 const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/verbal-stats`;
@@ -20,6 +20,18 @@ export const createVerbalStat = async (
 		method: "POST",
 		url: endPoint,
 		data: request,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	return response.data;
+};
+
+export const getVerbalStats = async () => {
+	const endPoint = baseUrl;
+	const response = await sendRequest({
+		method: "GET",
+		url: endPoint,
 		headers: {
 			"Content-Type": "application/json",
 		},

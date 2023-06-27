@@ -61,7 +61,7 @@ const SentenceEquivalanceUI = ({
 	const splitParagraphIntoBlanks = (paragraph?: string) => {
 		return paragraph ? paragraph.split("{BLANK}") : [];
 	};
-	const blanks = splitParagraphIntoBlanks(problem.paragraph!.String);
+	const blanks = splitParagraphIntoBlanks(problem.paragraph);
 	const numberOfBlanks = blanks ? blanks.length - 1 : 0;
 
 	// Update selected options for MCQMultipleChoice type

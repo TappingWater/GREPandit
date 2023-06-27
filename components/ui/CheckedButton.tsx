@@ -1,6 +1,5 @@
 import React from "react";
 import TooltipContainer from "./TooltipContainer";
-import { PRIMARY_BUTTON_STYLE } from "@/lib/styles";
 
 const CheckedButton = ({
 	onClick,
@@ -11,7 +10,7 @@ const CheckedButton = ({
 	unCheckedStyles,
 	toolTipText,
 }: {
-	onClick: () => void;
+	onClick: (event: React.MouseEvent) => void;
 	isChecked: boolean;
 	checkedText: string;
 	uncheckedText: string;
@@ -25,7 +24,7 @@ const CheckedButton = ({
 	return (
 		<TooltipContainer text={toolTipText}>
 			<button
-				onClick={() => onClick()}
+				onClick={(e) => onClick(e)}
 				className={`${
 					isChecked ? checkedStyles : unCheckedStyles
 				} ${common}`}

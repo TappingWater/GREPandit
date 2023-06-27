@@ -13,14 +13,6 @@ const Login = () => {
 		}
 	}, [authStatus, router]);
 
-	useEffect(() => {
-		if (authStatus === "authenticated") {
-			createUser().catch((err) => {
-				console.error("Error creating user:", err);
-			});
-		}
-	}, [authStatus]);
-
 	return (
 		<div className='pt-10'>
 			<Authenticator

@@ -38,7 +38,7 @@ const TextCompletionUI = ({
 		return paragraph ? paragraph.split("{BLANK}") : [];
 	};
 
-	const blanks = splitParagraphIntoBlanks(problem.paragraph!.String);
+	const blanks = splitParagraphIntoBlanks(problem.paragraph);
 	const numberOfBlanks = blanks ? blanks.length - 1 : 0;
 	const numberOfOptionsPerBlank = numberOfBlanks === 1 ? 5 : 3;
 
@@ -113,11 +113,13 @@ const TextCompletionUI = ({
 			<p className={`${PARAGRAPH_STYLE} p-2 md:p-4 leading-8`}>
 				{blanks.map((blank, index) => (
 					<span key={index}>
-						{renderReviewVocab(
-							blank,
-							problem.vocabulary,
-							problem.wordmap
-						)}
+						{reviewMode
+							? renderReviewVocab(
+									blank,
+									problem.vocabulary,
+									problem.wordmap
+							  )
+							: blank}
 						{index < numberOfBlanks && (
 							<Select
 								onValueChange={(value) =>
@@ -166,7 +168,7 @@ const TextCompletionUI = ({
 	const renderReviewNotification = () => {
 		if (reviewMode) {
 			return (
-				<p className='bg-white rounded text-black p-4'>
+				<div className='bg-white rounded text-black p-4'>
 					{selectedOptions.map((selectedOption, index) => {
 						const optionCorrect = isOptionCorrect(index);
 						const textColor = optionCorrect
@@ -199,7 +201,7 @@ const TextCompletionUI = ({
 							</p>
 						);
 					})}
-				</p>
+				</div>
 			);
 		}
 	};

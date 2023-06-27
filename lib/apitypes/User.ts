@@ -1,3 +1,5 @@
+import { Word } from "./VerbalTypes";
+
 export type MarkedQuestionResponse = {
 	id: number;
 	user_token: string;
@@ -8,4 +10,5 @@ export type MarkedWordResponse = {
 	id: number;
 	user_token: string;
 	word_id: number;
+	word: Word;
 };

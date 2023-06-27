@@ -72,7 +72,7 @@ const SelectInPassageUI = ({
 		}
 	};
 
-	const sentences = problem.paragraph?.String.split(".");
+	const sentences = problem.paragraph.split(".");
 
 	return (
 		<div className='text-sm md:text-base'>
@@ -105,7 +105,9 @@ const SelectInPassageUI = ({
 					</span>
 				))}
 			</div>
-			<p className={`${PARAGRAPH_STYLE} font-semibold`}>
+			<p
+				className={`font-text mt-2 mb-2 md:mt-4 md:mb-4 text-base md:text-lg font-semibold`}
+			>
 				{problem.question}
 				<span className='italic whitespace-pre font-light'>
 					(Click on the sentence in the paragraph or choose from the

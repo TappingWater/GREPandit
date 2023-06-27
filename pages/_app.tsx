@@ -7,8 +7,8 @@ import "../styles/globals.css";
 import {
 	Nunito,
 	Roboto_Condensed,
-	Roboto,
 	Fredericka_the_Great,
+	Roboto,
 } from "next/font/google";
 import { Authenticator, View } from "@aws-amplify/ui-react";
 import Layout from "@/components/Layout";
@@ -27,7 +27,7 @@ const headerFont = Roboto({
 	subsets: ["latin"],
 	variable: "--font-heading",
 	style: ["normal"],
-	weight: ["300", "400", "700"],
+	weight: ["400", "700", "900"],
 });
 const subTextFont = Roboto_Condensed({
 	subsets: ["latin"],

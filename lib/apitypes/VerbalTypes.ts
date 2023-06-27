@@ -8,14 +8,9 @@ export type VerbalProblem = {
 	competence: string;
 	framed_as: string;
 	type: string;
-	paragraph?: {
-		String: string;
-		Valid: boolean;
-	};
+	paragraph: string;
 	question: string;
 	options: Option[];
-	answer: null;
-	explanation: string;
 	difficulty: string;
 	vocabulary: Word[];
 	wordmap: Map<string, string>;
@@ -28,6 +23,8 @@ export type Word = {
 	id: number;
 	word: string;
 	meanings: Meaning[];
+	examples: string[];
+	marked: boolean;
 };
 
 /**
@@ -36,9 +33,7 @@ export type Word = {
  */
 export type Meaning = {
 	meaning: string;
-	examples: string[];
 	type: string;
-	synonyms: string[];
 };
 
 /**
@@ -62,4 +57,32 @@ export type RandomQuestionRequest = {
 	framed_as?: string;
 	difficulty?: string;
 	exclude_ids?: number[];
+};
+
+/**
+ * Type used to represent the type of request
+ * to be passed when creating a new verbal stat
+ */
+export type VerbalStatRequest = {
+	question_id: number;
+	correct: boolean;
+	answers: string[];
+	duration: number;
+};
+
+/**
+ * Type used to represent a verbal stat datapoint
+ * for a particular user
+ */
+export type VerbalStat = {
+	question_id: number;
+	correct: boolean;
+	answers: string[];
+	duration: number;
+	time: string;
+	competence: string;
+	framed_as: string;
+	type: string;
+	difficulty: string;
+	vocabulary: Word[];
 };

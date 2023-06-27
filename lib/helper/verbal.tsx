@@ -77,7 +77,6 @@ export const handleSubmission = (
 	}
 	setSelectedAnswers(selectedOptions);
 	setOptionJustificationDisplayMap(getJustificationDisplay(selectedOptions));
-	console.log(isAnswerCorrect(selectedOptions, optionMap));
 	if (isAnswerCorrect(selectedOptions, optionMap)) {
 		setNotificationMsg("Well done! You answered correctly");
 	} else {

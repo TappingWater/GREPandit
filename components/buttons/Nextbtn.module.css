@@ -1,0 +1,70 @@
+/* Nextbtn.module.css */
+
+.cta {
+	display: flex;
+	padding: 10px 45px;
+	text-decoration: none;
+	color: white;
+	background: #38bdf8;
+	transition: 1s;
+	box-shadow: 6px 6px 0 black;
+	transform: skewX(-15deg);
+}
+
+.cta:focus {
+	outline: none;
+}
+
+.cta:hover {
+	transition: 0.5s;
+	padding: 10px 45px;
+	box-shadow: 10px 10px 0 #0369a1;
+}
+
+.cta:active {
+	transform: skewX(-15deg) scale(0.95);
+	box-shadow: 5px 5px 0 #0369a1;
+}
+
+.cta .ctaSpan {
+	transition: 0.5s;
+	margin-right: 0px;
+}
+
+.cta:hover .ctaSpan {
+	transition: 0.5s;
+	margin-right: px;
+}
+
+.skewSpan {
+	transform: skewX(15deg);
+}
+
+.svgSpan {
+	width: 20px;
+	margin-left: 30px;
+	position: relative;
+	top: 12%;
+}
+
+/**************SVG****************/
+
+.one {
+	transition: 0.4s;
+	transform: translateX(-60%);
+}
+
+.two {
+	transition: 0.5s;
+	transform: translateX(-30%);
+}
+
+.cta:hover .one {
+	transform: translateX(-30%);
+}
+
+.cta:hover .two {
+	transform: translateX(-15%);
+}
+
+/* SVG animations */

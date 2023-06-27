@@ -12,10 +12,12 @@ import {
 	addValueToSet,
 	capitalize,
 	removeValueFromSet,
+	setContainsItem,
 } from "@/lib/helper/general";
-import { markedWordsAtom } from "./VerbalQuiz";
+
 import { useAtom } from "jotai";
 import CheckedButton from "../ui/CheckedButton";
+import { markedWordsAtom } from "@/pages/verbal";
 
 /**
  * Used to render a react component for a modal that is displayed
@@ -23,10 +25,10 @@ import CheckedButton from "../ui/CheckedButton";
 const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 	const [markedWords, setMarkedWords] = useAtom(markedWordsAtom);
 	const toggleMarkWord = () => {
-		if (markedWords.has(word.id)) {
-			setMarkedWords(removeValueFromSet(markedWords, word.id));
+		if (markedWords.has(word)) {
+			setMarkedWords(removeValueFromSet(markedWords, word));
 		} else {
-			setMarkedWords(addValueToSet(markedWords, word.id));
+			setMarkedWords(addValueToSet(markedWords, word));
 		}
 	};
 
@@ -44,7 +46,7 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 					</DialogTitle>
 					<DialogDescription>Definition</DialogDescription>
 				</DialogHeader>
-				<div>
+				<div className='max-h-[70vh] overflow-y-auto'>
 					{word.meanings.map((meaning, index) => {
 						return (
 							<div
@@ -57,31 +59,28 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 								<p className='font-semibold text-slate-700'>
 									{meaning.meaning}
 								</p>
-								<p className='text-pink-700'>Examples:</p>
-								<ul className='list-disc font-tabs pl-4 pr-4'>
-									{meaning.examples.map((ex, index) => {
-										return <li key={ex + index}>{ex}</li>;
-									})}
-								</ul>
-								<p className='text-pink-700'>Synonyms:</p>
-								<p className='font-tabs'>
-									{meaning.synonyms.map((synonym, index) => (
-										<span key={index}>
-											{synonym}
-											{index < meaning.synonyms.length - 1
-												? ", "
-												: ""}
-										</span>
-									))}
-								</p>
 							</div>
 						);
 					})}
+					{word.examples != null ? (
+						<div className='text-pink-700'>
+							Examples:
+							<ul className='list-disc font-tabs pl-4 pr-4 text-sm'>
+								{word.examples.map((ex, index) => {
+									return (
+										index < 3 && (
+											<li key={ex + index}>{ex}</li>
+										)
+									);
+								})}
+							</ul>
+						</div>
+					) : null}
 				</div>
 				<DialogFooter>
 					<CheckedButton
 						onClick={toggleMarkWord}
-						isChecked={markedWords.has(word.id)}
+						isChecked={setContainsItem(markedWords, word)}
 						checkedText='Marked'
 						uncheckedText='Mark word'
 						checkedStyles='shadow-inner shadow-sky-500'

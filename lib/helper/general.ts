@@ -16,50 +16,83 @@ export const normalizeText = (text: string) => {
 	return noPunctutation.toLowerCase().trim();
 };
 
-// Add value to a set which is a state variable
-// In react unless you are using primitive or array, objects
-// such as sets need to be created newly to trigger a rerender
-export function addValueToSet<T>(set: Set<T>, value: T): Set<T> {
+export function addValueToSet<T extends { id: number }>(
+	set: Set<T>,
+	value: T
+): Set<T> {
 	const newSet = new Set(set);
-	newSet.add(value);
+	if (![...newSet].some((item) => item.id === value.id)) {
+		newSet.add(value);
+	}
 	return newSet;
 }
 
-// Add values as an array to a set which is a state variable
-export function addValuesToSet<T>(set: Set<T>, values: T[]): Set<T> {
+export function addValuesToSet<T extends { id: number }>(
+	set: Set<T>,
+	values: T[]
+): Set<T> {
 	const newSet = new Set(set);
-	values.forEach((value) => newSet.add(value));
+	values.forEach((value) => {
+		if (![...newSet].some((item) => item.id === value.id)) {
+			newSet.add(value);
+		}
+	});
 	return newSet;
 }
 
-// Remove a value from a set which is a state variable
-// In react unless you are using primitive or array, objects
-// such as sets need to be created newly to trigger a rerender
-export function removeValueFromSet<T>(set: Set<T>, value: T): Set<T> {
-	const newSet = new Set(set);
-	newSet.delete(value);
-	return newSet;
+export function removeValueFromSet<T extends { id: number }>(
+	set: Set<T>,
+	value: T
+): Set<T> {
+	return new Set([...set].filter((item) => item.id !== value.id));
 }
 
-// Remove multiple values in an an array from a set
-export function removeValuesFromSet<T>(set: Set<T>, values: T[]): Set<T> {
-	const newSet = new Set(set);
-	values.forEach((value) => newSet.delete(value));
-	return newSet;
+export function removeValuesFromSet<T extends { id: number }>(
+	set: Set<T>,
+	values: T[]
+): Set<T> {
+	const idsToRemove = new Set(values.map((value) => value.id));
+	return new Set([...set].filter((item) => !idsToRemove.has(item.id)));
 }
 
-// Gets the newly added values to a set
-export function getAddedValuesForSet<T>(
+export function getAddedValuesForSet<T extends { id: number }>(
 	initialSet: Set<T>,
 	valueAddedSet: Set<T>
-): Array<T> {
-	return Array.from(valueAddedSet).filter((id) => !initialSet.has(id));
+): T[] {
+	const initialIds = new Set([...initialSet].map((item) => item.id));
+	return [...valueAddedSet].filter((item) => !initialIds.has(item.id));
 }
 
-// Gets the newly removed values from a set
-export function getRemovedValuesForSet<T>(
+export function getRemovedValuesForSet<T extends { id: number }>(
 	initialSet: Set<T>,
 	valueAddedSet: Set<T>
-): Array<T> {
-	return Array.from(initialSet).filter((id) => !valueAddedSet.has(id));
+): T[] {
+	const addedIds = new Set([...valueAddedSet].map((item) => item.id));
+	return [...initialSet].filter((item) => !addedIds.has(item.id));
+}
+
+export function setContainsItem<T extends { id: number }>(
+	set: Set<T>,
+	value: T
+): boolean {
+	const itemIds = new Set([...set].map((item) => item.id));
+	console.log(Array.from(itemIds));
+	return itemIds.has(value.id);
+}
+
+// Function to group data by some key
+export function groupBy<T>(
+	list: T[],
+	keyGetter: (input: T) => any
+): { [key: string]: T[] } {
+	return list.reduce((acc, item) => {
+		const key = keyGetter(item);
+		const collection = acc[key];
+		if (!collection) {
+			acc[key] = [item];
+		} else {
+			collection.push(item);
+		}
+		return acc;
+	}, {} as { [key: string]: T[] });
 }

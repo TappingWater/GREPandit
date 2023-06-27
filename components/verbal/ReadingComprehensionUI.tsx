@@ -112,9 +112,9 @@ const ReadingComprehensionUI = ({
 		<div className='text-sm md:text-base'>
 			<p className={`${PARAGRAPH_STYLE} p-2 md:p-4 leading-8`}>
 				{!reviewMode
-					? problem.paragraph?.String
+					? problem.paragraph
 					: renderReviewVocab(
-							problem.paragraph!.String!,
+							problem.paragraph,
 							problem.vocabulary,
 							problem.wordmap
 					  )}
