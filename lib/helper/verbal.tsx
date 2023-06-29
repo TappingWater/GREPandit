@@ -1,6 +1,7 @@
 import { VerbalProblem, Option, Word } from "@/lib/apitypes/VerbalTypes";
 import { removePunctuation } from "./general";
 import WordDialog from "@/components/verbal/WordDialog";
+import { RaisedBtn } from "@/components/buttons/RaisedBtn";
 
 const PRIMARY_BUTTON_STYLE =
 	"min-w-[80px] bg-sky-700 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-sky-600 active:bg-sky-400 active:shadow-inner transition-all";
@@ -133,7 +134,7 @@ export const renderButtons = (
 ) => {
 	if (selectedAnswers.length == 0) {
 		return (
-			<button
+			<RaisedBtn
 				onClick={() =>
 					handleSubmission(
 						minRequired,
@@ -145,65 +146,72 @@ export const renderButtons = (
 						handleSubmit
 					)
 				}
-				className={`${PRIMARY_BUTTON_STYLE}`}
-			>
-				Submit
-			</button>
+				label={"Submit"}
+				color={"sky"}
+				width={60}
+				height={30}
+			/>
 		);
 	} else if (reviewMode) {
 		return (
 			<>
-				<button
+				<RaisedBtn
 					onClick={() => {
 						setReviewMode(false);
 						setOptionJustificationDisplayMap(
 							getJustificationDisplay(selectedAnswers)
 						);
 					}}
-					className={`${PRIMARY_BUTTON_STYLE}`}
-				>
-					Exit Review
-				</button>
+					label={"Exit Review"}
+					color={"blue"}
+					width={120}
+					height={30}
+				/>
 			</>
 		);
 	} else if (!isAnswerCorrect(selectedAnswers, optionMap)) {
 		return (
 			<>
-				<button
+				<RaisedBtn
 					onClick={() => resetProblem()}
-					className='min-w-[80px] bg-pink-500 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-pink-400 active:bg-pink-200 active:shadow-inner transition-all'
-				>
-					Retry
-				</button>
-				<button
+					label={"Retry"}
+					color={"pink"}
+					width={60}
+					height={30}
+				/>
+				<RaisedBtn
 					onClick={() => setReviewMode(true)}
-					className='min-w-[80px] bg-sky-500 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-sky-400 active:bg-sky-200 active:shadow-inner transition-all'
-				>
-					Review
-				</button>
-				<button
+					label={"Review"}
+					color={"sky"}
+					width={60}
+					height={30}
+				/>
+				<RaisedBtn
 					onClick={() => handleNext()}
-					className={`${PRIMARY_BUTTON_STYLE}`}
-				>
-					Next
-				</button>
+					label={"Next"}
+					color={"blue"}
+					width={60}
+					height={30}
+				/>
 			</>
 		);
 	} else {
 		return (
 			<>
-				<button
+				<RaisedBtn
 					onClick={() => setReviewMode(true)}
-					className='min-w-[80px] bg-sky-500 mt-2 mb-2 p-1 md:mt-4 md:mb-4 md:p-2 rounded font-tabs ml-auto drop-shadow-2xl hover:bg-sky-400 active:bg-sky-200 active:shadow-inner transition-all'
-				>
-					Review
-				</button>
-				<button
+					label={"Review"}
+					color={"sky"}
+					width={60}
+					height={30}
+				/>
+				<RaisedBtn
 					onClick={() => handleNext()}
-					className={`${PRIMARY_BUTTON_STYLE}`}
-				>
-					Next
-				</button>
+					label={"Next"}
+					color={"blue"}
+					width={60}
+					height={30}
+				/>
 			</>
 		);
 	}

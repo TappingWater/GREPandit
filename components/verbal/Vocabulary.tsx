@@ -1,19 +1,25 @@
-import { Word } from "@/lib/apitypes/VerbalTypes";
-import { useState, useEffect } from "react";
-import { getMarkedWords, getProblematicWords } from "@/lib/api/userRequests";
+import { VerbalProblem, Word } from "@/lib/apitypes/VerbalTypes";
+import { useState } from "react";
+import { getProblematicWords } from "@/lib/api/userRequests";
 import CardCarousel from "./CardCarousel";
 import { Nextbtn, NextBtnProps } from "../buttons/Nextbtn";
 import Title from "../ui/Title";
 import { RaisedBtn } from "../buttons/RaisedBtn";
-import { getGeneralWords } from "@/lib/api/verbalRequests";
+import { getGeneralWords, getQuestions } from "@/lib/api/verbalRequests";
+import { useAtom } from "jotai";
+import { markedQuestionsAtom, markedWordsAtom } from "@/pages/verbal";
+import VerbalProblemUI from "./VerbalProblemUI";
 
 /**
  * Used to display the list of words marked by the user as
  * well as the words that are likely to come in the GRE exam.
  */
 const Vocabulary = () => {
-	const [markedWords, setMarkedWords] = useState<Word[]>([]);
-	const [markedWordsIdx, setMarkedWordsIdx] = useState(0);
+	const [markedProblemIDS] = useAtom(markedQuestionsAtom);
+	const [markedProblemsIdx, setMarkedProblemsIdx] = useState(0);
+	const [markedProblems, setProblems] = useState<VerbalProblem[]>([]);
+	const [markedWords] = useAtom(markedWordsAtom);
+	const [markedWordsIdx] = useState(0);
 	const [generalWords, setGeneralWords] = useState<Word[]>([]);
 	const [generalWordsIdx, setGeneralWordsIdx] = useState(0);
 	const [problematicWords, setProblematicWords] = useState<Word[]>([]);
@@ -31,6 +37,7 @@ const Vocabulary = () => {
 		label: "General",
 		text: "Words that appear frequently in the GRE",
 		onClick: () => {
+			fetchGeneralWords();
 			setCurrState("General");
 		},
 	};
@@ -38,36 +45,74 @@ const Vocabulary = () => {
 		label: "Problematic",
 		text: "Words from problems answered incorrectly",
 		onClick: () => {
+			fetchProblematicWords();
 			setCurrState("Problematic");
 		},
 	};
-	const btnProps: NextBtnProps[] = [personalBtn, generalBtn, problematicBtn];
+	const reviewBtn: NextBtnProps = {
+		label: "Problems",
+		text: "Verbal reasoning questions marked for review",
+		onClick: () => {
+			handleProblemCompleted();
+			setCurrState("Problems");
+		},
+	};
+	const btnProps: NextBtnProps[] = [
+		personalBtn,
+		generalBtn,
+		problematicBtn,
+		reviewBtn,
+	];
 
-	// Get marked questions when the component mounts
-	useEffect(() => {
-		// Fetch data when component  is first mounted
-		const fetchData = async () => {
-			try {
-				// Fetch initial data
-				const [markedWords, generalWords, problematicWords] =
-					await Promise.all([
-						getMarkedWords(),
-						getGeneralWords(),
-						getProblematicWords(),
-					]);
-				// Update state with fetched data
-				setMarkedWords(markedWords);
-				setMarkedWordsIdx(0);
-				setGeneralWords(generalWords);
-				setGeneralWordsIdx(0);
-				setProblematicWords(problematicWords);
-				setProblematicWordsIdx(0);
-			} catch (error) {
-				console.error("Error fetching initial data:", error);
+	const handleProblemCompleted = () => {
+		// If there are more problems, go to next. Otherwise, fetch new problems.
+		if (
+			markedProblemsIdx < markedProblemIDS.size - 1 &&
+			markedProblems.length > 0
+		) {
+			setMarkedProblemsIdx((curr) => curr + 1);
+		} else {
+			setMarkedProblemsIdx(0);
+		}
+		if (markedProblemsIdx > markedProblems.length - 1) {
+			// Cycle back to the first
+			if (markedProblemsIdx + 5 >= markedProblems.length) {
+				const reqProbIds = Array.from(markedProblemIDS)
+					.slice(markedProblemsIdx, markedProblemIDS.size)
+					.concat(
+						Array.from(markedProblemIDS).slice(
+							0,
+							markedProblemIDS.size - markedProblemsIdx
+						)
+					);
+				getQuestions(reqProbIds).then((problems) => {
+					setProblems((oldProblems) => [...oldProblems, ...problems]);
+				});
+			} else {
+				const reqProbIds = Array.from(markedProblemIDS).slice(
+					markedProblemsIdx,
+					markedProblemsIdx + 5
+				);
+				getQuestions(reqProbIds).then((problems) => {
+					setProblems((oldProblems) => [...oldProblems, ...problems]);
+				});
 			}
-		};
-		fetchData();
-	}, []);
+		}
+	};
+
+	const fetchGeneralWords = () => {
+		getGeneralWords().then((words) => {
+			setGeneralWords(words);
+			setGeneralWordsIdx(0);
+		});
+	};
+
+	const fetchProblematicWords = () => {
+		getProblematicWords().then((words) => {
+			setProblematicWords(words);
+			setProblematicWordsIdx(0);
+		});
+	};
 
 	const displayCards = (words: Word[], wordsIdx: number, subTab: string) => {
 		if (words && wordsIdx < words.length) {
@@ -79,7 +124,8 @@ const Vocabulary = () => {
 							label={"Back"}
 							color={"sky"}
 							onClick={() => setCurrState("")}
-							width={100}
+							width={50}
+							height={25}
 						/>
 						<CardCarousel words={words} />
 					</div>
@@ -101,8 +147,35 @@ const Vocabulary = () => {
 				</div>
 			</>
 		);
+	} else if (currSet == "Problems") {
+		return (
+			<>
+				<Title tab={"Review"} subTab={"Marked Questions"} />
+				<div className='flex flex-col items-start w-full min-h-screen'>
+					<RaisedBtn
+						label={"Back"}
+						color={"sky"}
+						onClick={() => setCurrState("")}
+						width={50}
+						height={25}
+					/>
+					<VerbalProblemUI
+						problem={markedProblems[markedProblemsIdx]}
+						onProblemCompleted={handleProblemCompleted}
+					/>
+				</div>
+			</>
+		);
 	} else if (currSet == "Personal") {
-		return <>{displayCards(markedWords, markedWordsIdx, "Personal")}</>;
+		return (
+			<>
+				{displayCards(
+					Array.from(markedWords),
+					markedWordsIdx,
+					"Personal"
+				)}
+			</>
+		);
 	} else if (currSet == "General") {
 		return <>{displayCards(generalWords, generalWordsIdx, "General")}</>;
 	} else {

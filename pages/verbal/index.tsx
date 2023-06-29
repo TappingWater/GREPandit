@@ -1,6 +1,5 @@
 import { WithAuth, UserPageProps } from "@/components/WithAuth";
 import VerbalQuiz from "@/components/verbal/VerbalQuiz";
-import VerbalStat from "@/components/verbal/VerbalStat";
 import Vocabulary from "@/components/verbal/Vocabulary";
 import {
 	getMarkedQuestions,
@@ -10,7 +9,8 @@ import {
 	unmarkQuestions,
 	unmarkWords,
 } from "@/lib/api/userRequests";
-import { Word } from "@/lib/apitypes/VerbalTypes";
+import { getVerbalStats } from "@/lib/api/verbalStatRequests";
+import { VerbalStat, Word } from "@/lib/apitypes/VerbalTypes";
 import {
 	getAddedValuesForSet,
 	getRemovedValuesForSet,
@@ -25,7 +25,7 @@ export const markedWordsAtom = atom<Set<Word>>(new Set<Word>());
 export const initialMarkedWordsAtom = atom<Set<Word>>(new Set<Word>());
 export const markedQuestionsAtom = atom<Set<number>>(new Set<number>());
 export const initialMarkedQuestionsAtom = atom<Set<number>>(new Set<number>());
-
+export const userVbStats = atom<VerbalStat[]>([]);
 /**
  * Page that renders the sub tabs for the verbal page
  */
@@ -48,6 +48,7 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 	const markedWordsSetRef = useRef<Set<Word>>(new Set());
 	const initMarkedQuestionsSetRef = useRef<Set<number>>(new Set());
 	const initMarkedWordsSetRef = useRef<Set<Word>>(new Set());
+	const [userStats, setStats] = useAtom(userVbStats);
 
 	/**
 	 * Update marked questions for user
@@ -117,15 +118,18 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 		const fetchData = async () => {
 			try {
 				// Fetch initial data
-				const [markedQuestions, markedWords] = await Promise.all([
-					getMarkedQuestions(),
-					getMarkedWords(),
-				]);
+				const [markedQuestions, markedWords, userStats] =
+					await Promise.all([
+						getMarkedQuestions(),
+						getMarkedWords(),
+						getVerbalStats(),
+					]);
 				// Update state with fetched data
 				setMarkedQuestionsSet(new Set(markedQuestions));
 				setInitialMarkedQuestionsSet(new Set(markedQuestions));
 				setMarkedWordsSet(new Set(markedWords));
 				setInitialMarkedWordsSet(new Set(markedWords));
+				setStats(userStats);
 			} catch (error) {
 				console.error("Error fetching initial data:", error);
 			}
@@ -151,7 +155,7 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 		} else if (tab == "quiz") {
 			return <VerbalQuiz></VerbalQuiz>;
 		} else if (tab == "stats") {
-			return <VerbalStat></VerbalStat>;
+			return null;
 		} else if (tab == "words") {
 			return <Vocabulary></Vocabulary>;
 		}

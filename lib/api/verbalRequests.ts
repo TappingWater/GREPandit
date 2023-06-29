@@ -1,39 +1,114 @@
-import { RandomQuestionRequest, Word } from "../apitypes/VerbalTypes";
+import {
+	RandomQuestionRequest,
+	VerbalProblem,
+	Word,
+} from "../apitypes/VerbalTypes";
 import { sendRequest, IRequestOptions } from "./requests";
 
-export const getRandomQuestions = async (request: RandomQuestionRequest) => {
+export const getRandomQuestions = async (
+	request: RandomQuestionRequest
+): Promise<VerbalProblem[]> => {
 	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions/random`;
-	const response = await sendRequest({
-		method: "POST",
-		url: endPoint,
-		data: request,
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
-	return response.data;
+	try {
+		const response = await sendRequest({
+			method: "POST",
+			url: endPoint,
+			data: request,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error: any) {
+		if (error.response && error.response.status === 404) {
+			return [];
+		} else {
+			throw error;
+		}
+	}
 };
 
-export const getGeneralWords = async (attempts = 0): Promise<Word[]> => {
+export const getAdaptiveQuestions = async (
+	qids: number[]
+): Promise<VerbalProblem[]> => {
+	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions/adaptive`;
+	try {
+		const response = await sendRequest({
+			method: "GET",
+			url: endPoint,
+			params: {
+				questions: JSON.stringify(qids),
+			},
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error: any) {
+		if (error.response && error.response.status === 404) {
+			return [];
+		} else {
+			throw error;
+		}
+	}
+};
+
+export const getQuestionsOnVocab = async (
+	qids: number[],
+	wordsIds: number[]
+): Promise<VerbalProblem[]> => {
+	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions/vocab`;
+	try {
+		const response = await sendRequest({
+			method: "GET",
+			url: endPoint,
+			params: {
+				words: JSON.stringify(wordsIds),
+				questions: JSON.stringify(qids),
+			},
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error: any) {
+		if (error.response && error.response.status === 404) {
+			return [];
+		} else {
+			throw error;
+		}
+	}
+};
+
+export const getQuestions = async (ids: number[]): Promise<VerbalProblem[]> => {
+	const endPoint = `${process.env.NEXT_PUBLIC_API_BASE}/vbquestions`;
+	try {
+		const response = await sendRequest({
+			method: "GET",
+			url: endPoint,
+			params: {
+				ids: JSON.stringify(ids),
+			},
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		return response.data;
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getGeneralWords = async (): Promise<Word[]> => {
 	const url = `${process.env.NEXT_PUBLIC_API_BASE}/words/marked`;
 	const requestOptions: IRequestOptions = {
 		method: "GET",
 		url: url,
 	};
-
 	try {
 		const response = await sendRequest(requestOptions);
 		return response.data.map((item: Word) => item);
 	} catch (error) {
-		console.error(
-			`Error on attempt ${attempts} to get marked questions:`,
-			error
-		);
-		if (attempts >= 3) {
-			throw new Error("Could not get marked questions after 3 attempts");
-		}
-		// Wait for 30 seconds before trying again
-		await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
-		return getGeneralWords(attempts + 1);
+		throw error;
 	}
 };

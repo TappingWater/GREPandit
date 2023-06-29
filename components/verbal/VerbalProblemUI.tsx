@@ -2,11 +2,7 @@ import { VerbalProblem, Option } from "@/lib/apitypes/VerbalTypes";
 import ReadingComprehensionUI from "./ReadingComprehensionUI";
 import SelectInPassageUI from "./SelectInPassageUI";
 import { HEADING_STYLE } from "@/lib/styles";
-import {
-	addValueToSet,
-	insertSpacesBeforeCapitals,
-	removeValueFromSet,
-} from "@/lib/helper/general";
+import { insertSpacesBeforeCapitals } from "@/lib/helper/general";
 import TextCompletionUI from "./TextCompletion";
 import SentenceEquivalanceUI from "./SentenceEquivalanceUI";
 import { useRef, useState } from "react";
@@ -16,6 +12,7 @@ import { createVerbalStat } from "@/lib/api/verbalStatRequests";
 import { isAnswerCorrect } from "@/lib/helper/verbal";
 import { useAtom } from "jotai";
 import { markedQuestionsAtom } from "@/pages/verbal";
+import LoadingAnimation from "../ui/Loading";
 
 /**
  * Component used to render a singular verbal problem by the Quiz
@@ -163,7 +160,9 @@ const VerbalProblemUI = ({
 	 */
 	if (problem) {
 		return (
-			<div className={"m-auto font-text w-[90%] md:w-[85%]"}>
+			<div
+				className={"m-auto flex-grow mt-4 font-text w-[90%] md:w-[85%]"}
+			>
 				<div className='flex flex-row'>
 					<h2 className={`${HEADING_STYLE} text-sm w-[60%]`}>
 						{insertSpacesBeforeCapitals(
@@ -181,8 +180,8 @@ const VerbalProblemUI = ({
 							isChecked={markedQuestions.has(problem.id)}
 							checkedText='Marked'
 							uncheckedText='Mark Question'
-							checkedStyles='shadow-inner shadow-sky-500'
-							unCheckedStyles='shadow-large shadow-sky-500'
+							checkedStyles='shadow-inner shadow-sky-600'
+							unCheckedStyles='shadow-large shadow-[2px_2px_2px] shadow-sky-900'
 							toolTipText='Marked questions can be reviewed later'
 						></CheckedButton>
 					</div>
@@ -191,7 +190,7 @@ const VerbalProblemUI = ({
 			</div>
 		);
 	} else {
-		return null;
+		return <LoadingAnimation />;
 	}
 };
 
