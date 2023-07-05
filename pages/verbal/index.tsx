@@ -1,6 +1,8 @@
 import { WithAuth, UserPageProps } from "@/components/WithAuth";
+import Verbal from "@/components/overview/Verbal";
+import ReviewUI from "@/components/verbal/ReviewUI";
 import VerbalQuiz from "@/components/verbal/VerbalQuiz";
-import Vocabulary from "@/components/verbal/Vocabulary";
+import VerbalStatUI from "@/components/verbal/VerbalStat";
 import {
 	getMarkedQuestions,
 	getMarkedWords,
@@ -150,14 +152,17 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 	}, []);
 
 	const renderSubTab = () => {
+		console.log(tab);
 		if (tab == null) {
 			return <VerbalQuiz></VerbalQuiz>;
 		} else if (tab == "quiz") {
 			return <VerbalQuiz></VerbalQuiz>;
 		} else if (tab == "stats") {
-			return null;
-		} else if (tab == "words") {
-			return <Vocabulary></Vocabulary>;
+			return <VerbalStatUI></VerbalStatUI>;
+		} else if (tab == "review") {
+			return <ReviewUI></ReviewUI>;
+		} else if (tab == "overview") {
+			return <Verbal></Verbal>;
 		}
 	};
 

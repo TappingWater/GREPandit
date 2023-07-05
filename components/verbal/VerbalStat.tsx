@@ -2,10 +2,14 @@
 // Pie chart for different problems percentage of problems taken: by type, by difficulty, by competence
 // Stacked bar chart y: accuracy x: difficulty stacks of type y: accuracy
 // Box plot: Time spent
-import { getVerbalStats } from "@/lib/api/verbalStatRequests";
 import { VerbalStat } from "@/lib/apitypes/VerbalTypes";
 import { groupBy } from "lodash";
-import { useEffect, useState } from "react";
+import Title from "../ui/Title";
+import { userVbStats } from "@/pages/verbal";
+import { useAtom } from "jotai";
+import AccuracyChart from "../charts/AccuracyChart";
+import PieChart from "../charts/PieChart";
+import ProgressChart from "../charts/ProgressChart";
 
 function calculateScores(data: VerbalStat[]): Map<string, number> | null {
 	// Define weights for difficulties
@@ -132,24 +136,39 @@ function calculateScores(data: VerbalStat[]): Map<string, number> | null {
 	return scores;
 }
 
-const VerbalStat = () => {
-	const [verbalStats, setVerbalStats] = useState([]);
-	useEffect(() => {
-		const fetchVerbalStats = async () => {
-			const stats = await getVerbalStats();
-			setVerbalStats(stats);
-			console.log(stats);
-			console.log(calculateScores(stats));
-		};
-		fetchVerbalStats();
-	}, []);
+const VerbalStatUI = () => {
+	const [verbalStats, setVerbalStats] = useAtom(userVbStats);
+	const scores = calculateScores(verbalStats);
 
 	return (
-		<div>
-			Stats
-			<p>asdsad</p>
-		</div>
+		<>
+			<Title tab={"Verbal Reasoning"} subTab={"Stats"} />
+			<div className='flex mb-4 flex-col md:flex-row items-center md:items-stretch justify-center space-y-4 md:space-y-0 space-x-0 md:space-x-4'>
+				<div className='bg-white rounded text-slate-900 w-[90vw] md:w-[45vw] p-2 md:p-4'>
+					<h3 className='font-heading text-base text-sky-500'>
+						Projected Score
+					</h3>
+					{scores != null ? (
+						<ProgressChart dataMap={scores} />
+					) : (
+						<p>Insufficient data for projection</p>
+					)}
+				</div>
+				<div className='bg-white rounded text-slate-900 w-[90vw] md:w-[45vw] p-2 md:p-4'>
+					<h3 className='font-heading text-base text-sky-500'>
+						Problem Accuracy
+					</h3>
+					<AccuracyChart data={verbalStats}></AccuracyChart>
+				</div>
+			</div>
+			<div className='bg-white rounded text-slate-900 w-[90vw] md:w-[45vw] p-2 md:p-4 m-auto'>
+				<h3 className='font-heading text-base text-sky-500'>
+					Problem Count
+				</h3>
+				<PieChart data={verbalStats}></PieChart>
+			</div>
+		</>
 	);
 };
 
-export default VerbalStat;
+export default VerbalStatUI;

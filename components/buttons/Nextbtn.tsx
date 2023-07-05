@@ -9,7 +9,7 @@ export type NextBtnProps = {
 export const Nextbtn = ({ btn }: { btn: NextBtnProps }) => {
 	return (
 		<button
-			className={`${styles.cta} flex flex-row rounded-sm items-center w-[280px] md:w-[400px]`}
+			className={`${styles.cta} flex flex-row rounded-sm items-center h-[140px] md:h-[120px] w-[280px] md:w-[400px] text-ellipsis`}
 			onClick={btn.onClick}
 		>
 			<div className='flex flex-col w-[200px] md:w-[300px] items-start justify-start'>

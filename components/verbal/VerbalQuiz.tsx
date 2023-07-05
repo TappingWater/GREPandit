@@ -33,7 +33,7 @@ const VerbalQuiz = () => {
 
 	const adaptiveBtn: NextBtnProps = {
 		label: "Adaptive",
-		text: "Uses an adaptive model to recommend questions user is weak at",
+		text: "Tackle problems that you are weak at based on past performance",
 		onClick: () => {
 			setProblems([]);
 			setCurrentProblemIndex(0);
@@ -42,7 +42,7 @@ const VerbalQuiz = () => {
 	};
 	const vocabBtn: NextBtnProps = {
 		label: "Vocabulary",
-		text: "Recommend questions to the user based on marked words and complex vocabulary from incorrectly answered problems",
+		text: "Tackle problems based on vocabulary that has been marked",
 		onClick: () => {
 			setProblems([]);
 			setCurrentProblemIndex(0);
@@ -51,7 +51,7 @@ const VerbalQuiz = () => {
 	};
 	const randomBtn: NextBtnProps = {
 		label: "Random",
-		text: "Fetch a set of new problems  at random",
+		text: "Tackle problems at random",
 		onClick: () => {
 			setProblems([]);
 			setCurrentProblemIndex(0);

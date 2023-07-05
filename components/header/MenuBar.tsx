@@ -76,31 +76,18 @@ const MenuTabs = ({
 			"Tackle problems related to the verbal section of the GRE exam",
 		query: "quiz",
 	};
-	const verbalWords: SubTab = {
-		name: "Vocabulary",
+	const verbalReview: SubTab = {
+		name: "Review",
 		id: 4,
 		description:
-			"List of words that user had difficulty with and words highlighted by the user",
-		query: "words",
-	};
-	const verbalMistakes: SubTab = {
-		name: "Mistakes",
-		id: 5,
-		description:
-			"List of problems the user answered incorrectly for review purposes",
-		query: "problems",
+			"Review problems and words that have been marked or answered incorrectly",
+		query: "review",
 	};
 	const verbalLink: MenuTab = {
 		href: "/verbal",
 		name: "Verbal",
 		id: 2,
-		tabs: [
-			verbalQuiz,
-			verbalOverview,
-			verbalStats,
-			verbalMistakes,
-			verbalWords,
-		],
+		tabs: [verbalQuiz, verbalOverview, verbalStats, verbalReview],
 		description:
 			"Designed to assist test takers with the tools to improve their strengths and analyze their weakness's for the verbal section",
 	};

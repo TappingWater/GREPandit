@@ -96,3 +96,27 @@ export function groupBy<T>(
 		return acc;
 	}, {} as { [key: string]: T[] });
 }
+
+// Function to render options for chart
+export function renderChartOptions(
+	name: string,
+	list: string[],
+	setOption: React.Dispatch<React.SetStateAction<string>>
+) {
+	return (
+		<ul className='flex flex-row font-tabs justify-center'>
+			{list.map((liItem, idx) => (
+				<div key={idx} className='flex items-center'>
+					<input
+						type='radio'
+						value={liItem}
+						name={name}
+						className='w-3 h-3 md:w-4 md:h-4 text-sky-600 focus:ring-sky-400 mr-2 ml-2 md:mr-4 md:ml-4 hover:cursor-pointer'
+						onChange={() => setOption(liItem)}
+					/>
+					<label>{liItem}</label>
+				</div>
+			))}
+		</ul>
+	);
+}

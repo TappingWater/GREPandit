@@ -14,7 +14,7 @@ import VerbalProblemUI from "./VerbalProblemUI";
  * Used to display the list of words marked by the user as
  * well as the words that are likely to come in the GRE exam.
  */
-const Vocabulary = () => {
+const ReviewUI = () => {
 	const [markedProblemIDS] = useAtom(markedQuestionsAtom);
 	const [markedProblemsIdx, setMarkedProblemsIdx] = useState(0);
 	const [markedProblems, setProblems] = useState<VerbalProblem[]>([]);
@@ -27,14 +27,14 @@ const Vocabulary = () => {
 	const [currSet, setCurrState] = useState<string>("");
 
 	const personalBtn: NextBtnProps = {
-		label: "Personal",
+		label: "My Vocabulary",
 		text: "Words marked for review",
 		onClick: () => {
 			setCurrState("Personal");
 		},
 	};
 	const generalBtn: NextBtnProps = {
-		label: "General",
+		label: "General Vocabulary",
 		text: "Words that appear frequently in the GRE",
 		onClick: () => {
 			fetchGeneralWords();
@@ -42,7 +42,7 @@ const Vocabulary = () => {
 		},
 	};
 	const problematicBtn: NextBtnProps = {
-		label: "Problematic",
+		label: "Problematic Vocabulary",
 		text: "Words from problems answered incorrectly",
 		onClick: () => {
 			fetchProblematicWords();
@@ -50,7 +50,7 @@ const Vocabulary = () => {
 		},
 	};
 	const reviewBtn: NextBtnProps = {
-		label: "Problems",
+		label: "My Problems",
 		text: "Verbal reasoning questions marked for review",
 		onClick: () => {
 			handleProblemCompleted();
@@ -58,10 +58,10 @@ const Vocabulary = () => {
 		},
 	};
 	const btnProps: NextBtnProps[] = [
+		reviewBtn,
 		personalBtn,
 		generalBtn,
 		problematicBtn,
-		reviewBtn,
 	];
 
 	const handleProblemCompleted = () => {
@@ -137,7 +137,7 @@ const Vocabulary = () => {
 	if (currSet == "") {
 		return (
 			<>
-				<Title tab={"Verbal Reasoning"} subTab={"Vocabulary"} />
+				<Title tab={"Verbal Reasoning"} subTab={"Review"} />
 				<div className='flex flex-col space-y-8 justify-center items-center'>
 					{btnProps.map((btnProp, idx) => (
 						<div key={idx}>
@@ -191,4 +191,4 @@ const Vocabulary = () => {
 	}
 };
 
-export default Vocabulary;
+export default ReviewUI;
