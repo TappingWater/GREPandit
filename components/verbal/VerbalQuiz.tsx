@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import VerbalProblemUI from "./VerbalProblemUI";
 import {
 	getAdaptiveQuestions,
+	getQuestions,
 	getQuestionsOnVocab,
 	getRandomQuestions,
 } from "@/lib/api/verbalRequests";
@@ -36,16 +37,16 @@ const VerbalQuiz = () => {
 		text: "Tackle problems that you are weak at based on past performance",
 		onClick: () => {
 			setProblems([]);
-			setCurrentProblemIndex(0);
+			setCurrentProblemIndex(-1);
 			setCurrState("adaptive");
 		},
 	};
 	const vocabBtn: NextBtnProps = {
 		label: "Vocabulary",
-		text: "Tackle problems based on vocabulary that has been marked",
+		text: "Tackle problems based on vocabulary that you have marked and problems answered incorrectly",
 		onClick: () => {
 			setProblems([]);
-			setCurrentProblemIndex(0);
+			setCurrentProblemIndex(-1);
 			setCurrState("vocabulary");
 		},
 	};
@@ -54,11 +55,25 @@ const VerbalQuiz = () => {
 		text: "Tackle problems at random",
 		onClick: () => {
 			setProblems([]);
-			setCurrentProblemIndex(0);
+			setCurrentProblemIndex(-1);
 			setCurrState("random");
 		},
 	};
-	const btnProps: NextBtnProps[] = [adaptiveBtn, vocabBtn, randomBtn];
+	const testBtn: NextBtnProps = {
+		label: "Test",
+		text: "For testing",
+		onClick: () => {
+			setProblems([]);
+			setCurrentProblemIndex(-1);
+			setCurrState("test");
+		},
+	};
+	const btnProps: NextBtnProps[] = [
+		adaptiveBtn,
+		vocabBtn,
+		randomBtn,
+		testBtn,
+	];
 
 	const handleProblemCompleted = () => {
 		// If there are more problems, go to next. Otherwise, fetch new problems.
@@ -83,6 +98,10 @@ const VerbalQuiz = () => {
 					exclude_ids: getQuestionsToAvoid(),
 				}).then((problems) => {
 					setProblems((oldProblems) => [...oldProblems, ...problems]);
+				});
+			} else if (currState == "test") {
+				getQuestions([13, 14, 15, 16, 17]).then((problems) => {
+					setProblems(problems);
 				});
 			} else {
 				return;

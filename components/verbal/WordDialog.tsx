@@ -34,23 +34,23 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
+			<DialogTrigger asChild className='font-slate-900'>
 				<span className='mr-1 text-sky-600 hover:underline hover:decoration-dotted hover:cursor-pointer hover:text-sky-400 transition-all'>
 					{label}
 				</span>
 			</DialogTrigger>
-			<DialogContent className='sm:max-w-[425px]'>
-				<DialogHeader>
+			<DialogContent className='w-[425px] md:w-[55vw] font-slate-900'>
+				<DialogHeader className='font-slate-900'>
 					<DialogTitle className='text-sky-700'>
 						{capitalize(word.word)}
 					</DialogTitle>
 					<DialogDescription>Definition</DialogDescription>
 				</DialogHeader>
-				<div className='max-h-[70vh] overflow-y-auto'>
+				<div className='h-[45vh] overflow-y-auto'>
 					{word.meanings.map((meaning, index) => {
 						return (
 							<div
-								className='text-sm font-light'
+								className='text-base font-light'
 								key={meaning.meaning + index}
 							>
 								<p className='font-tabs text-sky-600'>
@@ -63,9 +63,9 @@ const WordDialog = ({ label, word }: { label: string; word: Word }) => {
 						);
 					})}
 					{word.examples != null ? (
-						<div className='text-pink-700'>
+						<div className='text-pink-700 mt-2 mb-2'>
 							Examples:
-							<ul className='list-disc font-tabs pl-4 pr-4 text-sm'>
+							<ul className='list-disc font-tabs pl-2 pr-2 text-base'>
 								{word.examples.map((ex, index) => {
 									return (
 										index < 3 && (

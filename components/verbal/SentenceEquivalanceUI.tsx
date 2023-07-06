@@ -98,7 +98,7 @@ const SentenceEquivalanceUI = ({
 			<p className={`${PARAGRAPH_STYLE} p-2 md:p-4 leading-8`}>
 				{blanks.map((blank, index) => (
 					<span key={index}>
-						{reviewMode
+						{!reviewMode
 							? blank
 							: renderReviewVocab(
 									blank,

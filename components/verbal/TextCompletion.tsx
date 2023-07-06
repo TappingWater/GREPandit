@@ -172,7 +172,7 @@ const TextCompletionUI = ({
 					{selectedOptions.map((selectedOption, index) => {
 						const optionCorrect = isOptionCorrect(index);
 						const textColor = optionCorrect
-							? "text-sky-400"
+							? "text-sky-600"
 							: "text-pink-600";
 						const justification =
 							optionMap.get(selectedOption)!.justification;
@@ -208,10 +208,10 @@ const TextCompletionUI = ({
 
 	return (
 		<div className='text-sm md:text-base'>
-			{blanks && generateParagraphWithBlanks()}
 			<p className={`${PARAGRAPH_STYLE} font-semibold`}>
 				{problem.question}
 			</p>
+			{blanks && generateParagraphWithBlanks()}
 			{renderReviewNotification()}
 			<div>{renderNotification(notificationMsg, reviewMode)}</div>
 			<div className='flex justify-end space-x-4'>

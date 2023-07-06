@@ -36,11 +36,11 @@ export const sendRequest = async (options: IRequestOptions) => {
 		url: options.url,
 		data: options.data,
 		params: options.params,
-		headers: {
-			...options.headers,
-			// Add the token here
-			Authorization: `Bearer ${token}`,
-		},
+		// headers: {
+		// 	...options.headers,
+		// 	// Add the token here
+		// 	Authorization: `Bearer ${token}`,
+		// },
 		httpsAgent: agent,
 	};
 	try {

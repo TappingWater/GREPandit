@@ -18,6 +18,7 @@ const FlashCard = ({ word }: { word: Word }) => {
 		e.stopPropagation();
 		if (setContainsItem(markedWords, word)) {
 			setMarkedWords(removeValueFromSet(markedWords, word));
+			setIsFlipped(false);
 		} else {
 			setMarkedWords(addValueToSet(markedWords, word));
 		}

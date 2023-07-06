@@ -9,7 +9,7 @@ export type NextBtnProps = {
 export const Nextbtn = ({ btn }: { btn: NextBtnProps }) => {
 	return (
 		<button
-			className={`${styles.cta} flex flex-row rounded-sm items-center h-[140px] md:h-[120px] w-[280px] md:w-[400px] text-ellipsis`}
+			className={`${styles.cta} bg-sky-600 flex flex-row rounded-sm items-center h-[140px] md:h-[120px] w-[280px] md:w-[400px] text-ellipsis`}
 			onClick={btn.onClick}
 		>
 			<div className='flex flex-col w-[200px] md:w-[300px] items-start justify-start'>
@@ -18,7 +18,9 @@ export const Nextbtn = ({ btn }: { btn: NextBtnProps }) => {
 				>
 					{btn.label}
 				</span>
-				<p className='text-sm font-light text-left'>{btn.text}</p>
+				<p className='text-sm hover:font-semibold text-left'>
+					{btn.text}
+				</p>
 			</div>
 			<span className={`${styles.svgSpan} ${styles.skewSpan}`}>
 				<svg
