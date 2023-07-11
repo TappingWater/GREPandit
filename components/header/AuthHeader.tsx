@@ -66,8 +66,8 @@ const AuthHeader = ({ email }: { email: string }) => {
 	return (
 		<motion.div initial={false} animate={isOpen ? "open" : "closed"}>
 			<header className='fixed w-[100%] h-[90px] pt-3 pb-3 flex items-center bg-white z-20 border-solid border-pink-300 border-b-2'>
-				<Logo className={logoDivStyling} />
-				<div className={desktopMenuStyling}>
+				<Logo className={logoDivStyling} loggedIn={true} />
+				<div className='hidden md:flex flex-row items-baseline gap-x-10 w-[65%] justify-between mr-5'>
 					<MenuBar useDesktop={true} signOut={handleSignOut} />
 				</div>
 				<div className='hidden md:flex ml-auto mr-5 font-tabs'>

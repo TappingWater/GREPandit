@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
-import { createUser } from "@/lib/api/userRequests";
 
 const Login = () => {
 	const router = useRouter();
@@ -9,7 +8,7 @@ const Login = () => {
 
 	useEffect(() => {
 		if (authStatus == "authenticated") {
-			router.replace("/");
+			router.replace("/dashboard");
 		}
 	}, [authStatus, router]);
 

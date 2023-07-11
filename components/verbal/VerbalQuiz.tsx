@@ -10,12 +10,13 @@ import {
 	getQuestionsOnVocab,
 	getRandomQuestions,
 } from "@/lib/api/verbalRequests";
-import { markedWordsAtom, userVbStats } from "@/pages/verbal";
+import { markedWordsAtom, userVbStats } from "@/pages/dashboard";
 import { useAtom } from "jotai";
 import { NextBtnProps, Nextbtn } from "../buttons/Nextbtn";
 import Title from "../ui/Title";
 import { RaisedBtn } from "../buttons/RaisedBtn";
 import { capitalize } from "../../lib/helper/general";
+import { motion } from "framer-motion";
 
 /**
  * Render the Quiz section of the User dashboard.
@@ -146,16 +147,27 @@ const VerbalQuiz = () => {
 		return Array.from(wordIds);
 	};
 
+	const variants = {
+		hidden: { opacity: 0, x: -500 },
+		visible: { opacity: 1, x: 0 },
+	};
+
 	// Don't render anything if problems haven't loaded yet
 	if (currState == "") {
 		return (
 			<>
-				<Title tab={"Verbal Reasoning"} subTab={"Quiz"} />
+				<Title tab={"Quiz"} />
 				<div className='flex flex-col space-y-8 justify-center items-center'>
 					{btnProps.map((btnProp, idx) => (
-						<div key={idx}>
+						<motion.div
+							key={idx}
+							variants={variants}
+							initial='hidden'
+							animate='visible'
+							transition={{ duration: 0.5, delay: idx * 0.2 }}
+						>
 							<Nextbtn btn={btnProp} />
-						</div>
+						</motion.div>
 					))}
 				</div>
 			</>

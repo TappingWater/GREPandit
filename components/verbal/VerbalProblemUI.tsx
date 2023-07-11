@@ -11,7 +11,7 @@ import CheckedButton from "../ui/CheckedButton";
 import { createVerbalStat } from "@/lib/api/verbalStatRequests";
 import { isAnswerCorrect } from "@/lib/helper/verbal";
 import { useAtom } from "jotai";
-import { markedQuestionsAtom } from "@/pages/verbal";
+import { markedQuestionsAtom } from "@/pages/dashboard";
 import LoadingAnimation from "../ui/Loading";
 
 /**

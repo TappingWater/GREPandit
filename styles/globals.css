@@ -140,7 +140,6 @@ body {
 
 *::-webkit-scrollbar-track {
 	background: var(--primary);
-	border-radius: 5px;
 }
 
 *::-webkit-scrollbar-thumb {

@@ -17,7 +17,7 @@ import {
 
 import { useAtom } from "jotai";
 import CheckedButton from "../ui/CheckedButton";
-import { markedWordsAtom } from "@/pages/verbal";
+import { markedWordsAtom } from "@/pages/dashboard";
 
 /**
  * Used to render a react component for a modal that is displayed

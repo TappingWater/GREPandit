@@ -7,8 +7,9 @@ import Title from "../ui/Title";
 import { RaisedBtn } from "../buttons/RaisedBtn";
 import { getGeneralWords, getQuestions } from "@/lib/api/verbalRequests";
 import { useAtom } from "jotai";
-import { markedQuestionsAtom, markedWordsAtom } from "@/pages/verbal";
+import { markedQuestionsAtom, markedWordsAtom } from "@/pages/dashboard";
 import VerbalProblemUI from "./VerbalProblemUI";
+import { motion } from "framer-motion";
 
 /**
  * Used to display the list of words marked by the user as
@@ -134,15 +135,26 @@ const ReviewUI = () => {
 		}
 	};
 
+	const variants = {
+		hidden: { opacity: 0, x: -500 },
+		visible: { opacity: 1, x: 0 },
+	};
+
 	if (currSet == "") {
 		return (
 			<>
-				<Title tab={"Verbal Reasoning"} subTab={"Review"} />
+				<Title tab={"Review"} />
 				<div className='flex flex-col space-y-8 justify-center items-center'>
 					{btnProps.map((btnProp, idx) => (
-						<div key={idx}>
+						<motion.div
+							key={idx}
+							variants={variants}
+							initial='hidden'
+							animate='visible'
+							transition={{ duration: 0.5, delay: idx * 0.2 }}
+						>
 							<Nextbtn btn={btnProp} />
-						</div>
+						</motion.div>
 					))}
 				</div>
 			</>

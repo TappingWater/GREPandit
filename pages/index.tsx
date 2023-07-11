@@ -20,18 +20,18 @@ const Home = () => {
 				</div>
 				<div className='ml-[10px] md:ml-[0px] pt-[10px] mb-[5px] md:pt-[20vh] sm:h-[40%] pl-[10px] md:h-[100%] md:w-[50%]'>
 					<h1 className='font-heading  font-bold text-xl text-pink-200'>
-						Taking the GRE exam?
+						Taking the GRE Exam?
 					</h1>
+					<p className={heroSubTextStyling}>
+						Need help with Verbal Reasoning
+					</p>
 					<p className={heroSubTextStyling}>
 						Personalized questions that adapt to you
 					</p>
 					<p className={heroSubTextStyling}>Monitor your progress</p>
-					<p className={heroSubTextStyling}>
-						Let us help you get the score you desire
-					</p>
 					<div className='flex flex-row'>
 						<Link href='/login' className={buttonStyling}>
-							Try It For Free
+							Sign Up For Free
 						</Link>
 					</div>
 				</div>

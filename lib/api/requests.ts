@@ -30,17 +30,16 @@ export const sendRequest = async (options: IRequestOptions) => {
 		console.error("Error getting session:", error);
 		throw error;
 	}
-	console.log(token);
 	const requestOptions: AxiosRequestConfig = {
 		method: options.method,
 		url: options.url,
 		data: options.data,
 		params: options.params,
-		// headers: {
-		// 	...options.headers,
-		// 	// Add the token here
-		// 	Authorization: `Bearer ${token}`,
-		// },
+		headers: {
+			...options.headers,
+			// Add the token here
+			Authorization: `Bearer ${token}`,
+		},
 		httpsAgent: agent,
 	};
 	try {

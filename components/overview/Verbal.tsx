@@ -521,7 +521,7 @@ const Verbal = () => {
 
 	return (
 		<>
-			<Title tab={"Verbal Reasoning"} subTab={"Overview"} />
+			<Title tab={"Info"} />
 			{renderInfo(infoMap)}
 		</>
 	);

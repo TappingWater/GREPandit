@@ -10,7 +10,7 @@ import {
 import ListAccordion from "../ui/ListAccordion";
 import { useAtom } from "jotai";
 import CheckedButton from "../ui/CheckedButton";
-import { markedWordsAtom } from "@/pages/verbal";
+import { markedWordsAtom } from "@/pages/dashboard";
 
 const FlashCard = ({ word }: { word: Word }) => {
 	const [markedWords, setMarkedWords] = useAtom(markedWordsAtom);

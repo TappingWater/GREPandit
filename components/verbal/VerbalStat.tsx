@@ -5,7 +5,7 @@
 import { VerbalStat } from "@/lib/apitypes/VerbalTypes";
 import { groupBy } from "lodash";
 import Title from "../ui/Title";
-import { userVbStats } from "@/pages/verbal";
+import { userVbStats } from "@/pages/dashboard";
 import { useAtom } from "jotai";
 import AccuracyChart from "../charts/AccuracyChart";
 import PieChart from "../charts/PieChart";
@@ -63,7 +63,6 @@ function calculateScores(data: VerbalStat[]): Map<string, number> | null {
 				dailyTotal.set(key, 1);
 			}
 			if (dailyTotalCorrect.has(key) && question.correct) {
-				console.log(question.correct);
 				dailyTotalCorrect.set(key, dailyTotalCorrect.get(key)! + 1);
 			} else if (question.correct) {
 				dailyTotalCorrect.set(key, 1);
@@ -122,9 +121,6 @@ function calculateScores(data: VerbalStat[]): Map<string, number> | null {
 							accuracyToday;
 						const maxPossibleRange =
 							scoreRange * diffWeight * typeWeight;
-						console.log(todayRange);
-						console.log(maxPossibleRange);
-						console.log(accuracyToday);
 						dailyRange = dailyRange - maxPossibleRange + todayRange;
 					}
 				}
@@ -142,7 +138,7 @@ const VerbalStatUI = () => {
 
 	return (
 		<>
-			<Title tab={"Verbal Reasoning"} subTab={"Stats"} />
+			<Title tab={"Stats"} />
 			<div className='flex mb-4 flex-col md:flex-row items-center md:items-stretch justify-center space-y-4 md:space-y-0 space-x-0 md:space-x-4'>
 				<div className='bg-white rounded text-slate-900 w-[90vw] md:w-[45vw] p-2 md:p-4'>
 					<h3 className='font-heading text-base text-sky-500'>

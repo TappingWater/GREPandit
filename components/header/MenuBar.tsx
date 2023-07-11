@@ -34,9 +34,8 @@ const MenuTabs = ({
 	const dashboardOverview: SubTab = {
 		name: "Overview",
 		id: 1,
-		description:
-			"Summary of the GRE exam as a whole and general tips for exam takers",
-		query: "overview",
+		description: "Dashboard landing page with summary of progress",
+		query: "home",
 	};
 	const dashboardStats: SubTab = {
 		name: "Stats",
@@ -54,13 +53,11 @@ const MenuTabs = ({
 			"Summary of the GRE exam and cumulative stats for the platform user across all attempted problems using the platform",
 	};
 
-	// Define verbal tab for the nav bar
 	const verbalOverview: SubTab = {
-		name: "Overview",
+		name: "Info",
 		id: 1,
-		description:
-			"Summary and tips for improving in the verbal section of the GRE exam.",
-		query: "overview",
+		description: "Information regarding the GRE examination and platform.",
+		query: "info",
 	};
 	const verbalStats: SubTab = {
 		name: "Stats",
@@ -84,10 +81,16 @@ const MenuTabs = ({
 		query: "review",
 	};
 	const verbalLink: MenuTab = {
-		href: "/verbal",
+		href: "/dashboard",
 		name: "Verbal",
 		id: 2,
-		tabs: [verbalQuiz, verbalOverview, verbalStats, verbalReview],
+		tabs: [
+			dashboardOverview,
+			verbalQuiz,
+			verbalOverview,
+			verbalStats,
+			verbalReview,
+		],
 		description:
 			"Designed to assist test takers with the tools to improve their strengths and analyze their weakness's for the verbal section",
 	};
@@ -212,13 +215,13 @@ const MenuTabs = ({
 
 	// Menu with the sub tabs for the header and profile
 	const headerMenu: MenuTab[] = [
-		dashboardLink,
+		// dashboardLink,
 		verbalLink,
-		quantitativeLink,
-		writingLink,
-		helpLink,
+		// quantitativeLink,
+		// writingLink,
+		// helpLink,
 	];
-	const profileMenu: MenuTab[] = [accountLink, billingLink];
+	// const profileMenu: MenuTab[] = [accountLink, billingLink];
 
 	// Render tabs to be used for desktop and mobile menu
 	return (
@@ -228,7 +231,7 @@ const MenuTabs = ({
 			) : (
 				<MobileMenu
 					links={headerMenu}
-					accountLinks={profileMenu}
+					// accountLinks={profileMenu}
 					logOut={signOut}
 				></MobileMenu>
 			)}

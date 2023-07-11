@@ -76,7 +76,6 @@ export function setContainsItem<T extends { id: number }>(
 	value: T
 ): boolean {
 	const itemIds = new Set([...set].map((item) => item.id));
-	console.log(Array.from(itemIds));
 	return itemIds.has(value.id);
 }
 
