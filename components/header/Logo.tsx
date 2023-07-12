@@ -11,7 +11,7 @@ const Logo = ({
 	return (
 		<div className={className ? className : ""}>
 			<Link
-				href={loggedIn ? "/dashboard" : ""}
+				href={loggedIn ? "/dashboard?tab=home" : ""}
 				className={`flex flex-row items-center p-1 ${className}`}
 			>
 				<Image

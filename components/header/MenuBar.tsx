@@ -55,27 +55,27 @@ const MenuTabs = ({
 
 	const verbalOverview: SubTab = {
 		name: "Info",
-		id: 1,
+		id: 2,
 		description: "Information regarding the GRE examination and platform.",
 		query: "info",
 	};
 	const verbalStats: SubTab = {
 		name: "Stats",
-		id: 2,
+		id: 3,
 		description:
 			"Summary of the User's statistics over attempted verbal problems",
 		query: "stats",
 	};
 	const verbalQuiz: SubTab = {
 		name: "Quiz",
-		id: 3,
+		id: 4,
 		description:
 			"Tackle problems related to the verbal section of the GRE exam",
 		query: "quiz",
 	};
 	const verbalReview: SubTab = {
 		name: "Review",
-		id: 4,
+		id: 5,
 		description:
 			"Review problems and words that have been marked or answered incorrectly",
 		query: "review",
@@ -87,9 +87,9 @@ const MenuTabs = ({
 		tabs: [
 			dashboardOverview,
 			verbalQuiz,
-			verbalOverview,
-			verbalStats,
 			verbalReview,
+			verbalStats,
+			verbalOverview,
 		],
 		description:
 			"Designed to assist test takers with the tools to improve their strengths and analyze their weakness's for the verbal section",

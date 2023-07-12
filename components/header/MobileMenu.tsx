@@ -115,7 +115,7 @@ const MobileMenu = ({
 								className='text-md font-tabs w-full flex justify-start'
 								variants={mobileTabVariants}
 								whileTap={{ scale: 0.85 }}
-								key={link.id}
+								key={link.id + subLink.name}
 							>
 								<Link
 									href={link.href + "?tab=" + subLink.query}
