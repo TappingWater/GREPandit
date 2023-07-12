@@ -18,6 +18,7 @@ export interface IRequestOptions {
 }
 
 export const sendRequest = async (options: IRequestOptions) => {
+	console.log(process.env.API_BASE_URL);
 	// Get the access token from indexed db (NoSQL store)
 	let token;
 	try {
