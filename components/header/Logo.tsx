@@ -11,14 +11,15 @@ const Logo = ({
 	return (
 		<div className={className ? className : ""}>
 			<Link
-				href={loggedIn ? "/dashboard?tab=home" : ""}
+				href={loggedIn ? "/dashboard?tab=home" : "/"}
 				className={`flex flex-row items-center p-1 ${className}`}
 			>
 				<Image
-					src='/headerLogo.png'
+					src='/headerLogo.webp'
 					alt='Logo'
 					height={70}
 					width={70}
+					priority
 				/>
 				<p className='font-heading text-center font-bold flex'>
 					<span className='text-sky-700'>GRE</span>

@@ -13,8 +13,6 @@ const Header = () => {
 	const renderAuthButtons = () => {
 		if (authStatus === "authenticated") {
 			return <AuthHeader email={user.attributes!.email} />;
-		} else if (authStatus === "configuring") {
-			return <NonAuthHeader loadLogin={false} />;
 		} else {
 			return <NonAuthHeader loadLogin={true} />;
 		}

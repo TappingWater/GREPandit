@@ -12,7 +12,7 @@ const Home = () => {
 				<div className='relative h-[60vh] c md:mt-[5%] w-[80%] md:w-[60%] ml-5 m-auto'>
 					<Image
 						className='object-scale-down w-full h-full object-bottom z-10'
-						src='/heroBanner.png'
+						src='/heroBanner.webp'
 						alt='Logo'
 						fill
 						priority
