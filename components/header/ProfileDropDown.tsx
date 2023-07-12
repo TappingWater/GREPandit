@@ -25,10 +25,10 @@ const ProfileDropDown = ({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger className='border-none bg-pink-300 font-bold text-sky-700 flex items-center justify-center font-tabs text-2xl h-[40px] w-[40px] rounded-full'>
-				<span>{email.charAt(0)}</span>
+				<span>{email ? email.charAt(0) : "U"}</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				<DropdownMenuLabel>{email}</DropdownMenuLabel>
+				<DropdownMenuLabel>{email ? email : "User"}</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{/* <DropdownMenuItem className={tabStyling}>
           <Link href="/profile" className="w-full"><IconTab img="/icons/profile.svg" name="Profile"/></Link>
