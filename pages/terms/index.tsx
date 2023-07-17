@@ -6,9 +6,10 @@ const Terms = () => {
 			</h2>
 			<p className='font-light text-sm'>Last updated: July 17th, 2023</p>
 			<p>
-				These Terms and Conditions ("Terms", "Terms and Conditions")
-				govern your relationship with the Grepandit website (the
-				"Service") operated by Eitri LLC ("us", "we", "our").
+				These Terms and Conditions (&quot;Terms&quot;, &quot;Terms and
+				Conditions&quot;) govern your relationship with the Grepandit
+				website (The &quot;Service&quot;) operated by Eitri LLC
+				(&quot;us&quot;, &quot;we&quot;, &quot;our&quot;).
 			</p>
 			<p>
 				Please read these Terms and Conditions carefully before using
