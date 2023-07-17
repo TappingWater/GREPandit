@@ -21,9 +21,11 @@ import LoadingAnimation from "../ui/Loading";
 const VerbalProblemUI = ({
 	problem,
 	onProblemCompleted,
+	noMoreProblems,
 }: {
 	problem: VerbalProblem;
 	onProblemCompleted: () => void;
+	noMoreProblems: boolean;
 }) => {
 	const [timerDate, setTimerDate] = useState(new Date(Date.now()));
 	const timerRef = useRef<TimerHandle | null>(null);
@@ -189,6 +191,8 @@ const VerbalProblemUI = ({
 				{renderProblem(problem)}
 			</div>
 		);
+	} else if (noMoreProblems) {
+		return <>No more problems within question bank for criteria</>;
 	} else {
 		return <LoadingAnimation />;
 	}

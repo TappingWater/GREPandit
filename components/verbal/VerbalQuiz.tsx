@@ -1,7 +1,4 @@
-import {
-	RandomQuestionRequest,
-	VerbalProblem,
-} from "@/lib/apitypes/VerbalTypes";
+import { VerbalProblem } from "@/lib/apitypes/VerbalTypes";
 import { useEffect, useState } from "react";
 import VerbalProblemUI from "./VerbalProblemUI";
 import {
@@ -28,6 +25,7 @@ const VerbalQuiz = () => {
 	const [markedWords] = useAtom(markedWordsAtom);
 	const [userStats] = useAtom(userVbStats);
 	const [currState, setCurrState] = useState<string>("");
+	const [noMoreProblems, setNoMoreProblems] = useState(false);
 
 	useEffect(() => {
 		handleProblemCompleted();
@@ -83,26 +81,54 @@ const VerbalQuiz = () => {
 			problems.length == 0
 		) {
 			if (currState == "adaptive") {
-				getAdaptiveQuestions(getQuestionsToAvoid()).then((problems) =>
-					setProblems((oldProblems) => [...oldProblems, ...problems])
-				);
+				getAdaptiveQuestions(getQuestionsToAvoid()).then((problems) => {
+					if (problems.length == 0) {
+						setNoMoreProblems(true);
+					} else {
+						setProblems((oldProblems) => [
+							...oldProblems,
+							...problems,
+						]);
+					}
+				});
 			} else if (currState == "vocabulary") {
 				getQuestionsOnVocab(
 					getQuestionsToAvoid(),
 					getWordsToSearchFor()
 				).then((problems) => {
-					setProblems((oldProblems) => [...oldProblems, ...problems]);
+					if (problems.length == 0) {
+						setNoMoreProblems(true);
+					} else {
+						setProblems((oldProblems) => [
+							...oldProblems,
+							...problems,
+						]);
+					}
 				});
 			} else if (currState == "random") {
 				getRandomQuestions({
 					limit: 5,
 					exclude_ids: getQuestionsToAvoid(),
 				}).then((problems) => {
-					setProblems((oldProblems) => [...oldProblems, ...problems]);
+					if (problems.length == 0) {
+						setNoMoreProblems(true);
+					} else {
+						setProblems((oldProblems) => [
+							...oldProblems,
+							...problems,
+						]);
+					}
 				});
 			} else if (currState == "test") {
 				getQuestions([13, 14, 15, 16, 17]).then((problems) => {
-					setProblems(problems);
+					if (problems.length == 0) {
+						setNoMoreProblems(true);
+					} else {
+						setProblems((oldProblems) => [
+							...oldProblems,
+							...problems,
+						]);
+					}
 				});
 			} else {
 				return;
@@ -187,6 +213,7 @@ const VerbalQuiz = () => {
 					<VerbalProblemUI
 						problem={problems[currentProblemIndex]}
 						onProblemCompleted={handleProblemCompleted}
+						noMoreProblems={noMoreProblems}
 					/>
 				</div>
 			</>

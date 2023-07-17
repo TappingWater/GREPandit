@@ -160,24 +160,29 @@ const ReviewUI = () => {
 			</>
 		);
 	} else if (currSet == "Problems") {
-		return (
-			<>
-				<Title tab={"Review"} subTab={"Marked Questions"} />
-				<div className='flex flex-col items-start w-full min-h-screen'>
-					<RaisedBtn
-						label={"Back"}
-						color={"sky"}
-						onClick={() => setCurrState("")}
-						width={50}
-						height={25}
-					/>
-					<VerbalProblemUI
-						problem={markedProblems[markedProblemsIdx]}
-						onProblemCompleted={handleProblemCompleted}
-					/>
-				</div>
-			</>
-		);
+		if (markedProblems.length > 0) {
+			return (
+				<>
+					<Title tab={"Review"} subTab={"Marked Questions"} />
+					<div className='flex flex-col items-start w-full min-h-screen'>
+						<RaisedBtn
+							label={"Back"}
+							color={"sky"}
+							onClick={() => setCurrState("")}
+							width={50}
+							height={25}
+						/>
+						<VerbalProblemUI
+							problem={markedProblems[markedProblemsIdx]}
+							onProblemCompleted={handleProblemCompleted}
+							noMoreProblems={false}
+						/>
+					</div>
+				</>
+			);
+		} else {
+			return <>No marked problems</>;
+		}
 	} else if (currSet == "Personal") {
 		return (
 			<>

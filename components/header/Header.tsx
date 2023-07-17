@@ -1,18 +1,19 @@
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import AuthHeader from "./AuthHeader";
 import NonAuthHeader from "./NonAuthHeader";
-import { useEffect } from "react";
-import { createUser } from "@/lib/api/userRequests";
 
 const Header = () => {
-	const { user, authStatus } = useAuthenticator((context) => [
+	const { user, authStatus, isPending } = useAuthenticator((context) => [
 		context.user,
-		context.route,
+		context.authStatus,
+		context.isPending,
 	]);
 
 	const renderAuthButtons = () => {
 		if (authStatus === "authenticated") {
 			return <AuthHeader email={user.attributes!.email} />;
+		} else if (isPending) {
+			return <NonAuthHeader loadLogin={false} />;
 		} else {
 			return <NonAuthHeader loadLogin={true} />;
 		}

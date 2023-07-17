@@ -88,7 +88,7 @@ export const getMarkedWords = async () => {
 	}
 };
 
-export const getMarkedQuestions = async (attempts = 0): Promise<number[]> => {
+export const getMarkedQuestions = async (): Promise<number[]> => {
 	const url = `${process.env.NEXT_PUBLIC_API_BASE}/users/marked-questions`;
 	const requestOptions: IRequestOptions = {
 		method: "GET",
@@ -101,16 +101,8 @@ export const getMarkedQuestions = async (attempts = 0): Promise<number[]> => {
 			(item: MarkedQuestionResponse) => item.verbal_question_id
 		);
 	} catch (error) {
-		console.error(
-			`Error on attempt ${attempts} to get marked questions:`,
-			error
-		);
-		if (attempts >= 3) {
-			throw new Error("Could not get marked questions after 3 attempts");
-		}
-		// Wait for 30 seconds before trying again
-		await new Promise((resolve) => setTimeout(resolve, 30 * 1000));
-		return getMarkedQuestions(attempts + 1);
+		console.error(`Error getting marked questions:`, error);
+		throw error;
 	}
 };
 

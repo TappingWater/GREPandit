@@ -8,7 +8,7 @@ const Login = () => {
 
 	useEffect(() => {
 		if (authStatus == "authenticated") {
-			router.replace("/dashboard");
+			router.replace("/dashboard?tab=home");
 		}
 	}, [authStatus, router]);
 

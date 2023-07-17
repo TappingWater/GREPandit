@@ -5,6 +5,7 @@ import ReviewUI from "@/components/verbal/ReviewUI";
 import VerbalQuiz from "@/components/verbal/VerbalQuiz";
 import VerbalStatUI from "@/components/verbal/VerbalStat";
 import {
+	createUser,
 	getMarkedQuestions,
 	getMarkedWords,
 	markQuestions,
@@ -126,6 +127,7 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 						getMarkedQuestions(),
 						getMarkedWords(),
 						getVerbalStats(),
+						createUser(),
 					]);
 				// Update state with fetched data
 				setMarkedQuestionsSet(new Set(markedQuestions));

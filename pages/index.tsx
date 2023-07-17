@@ -1,8 +1,17 @@
+import { useAuthenticator } from "@aws-amplify/ui-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 // Home component
 const Home = () => {
+	const { authStatus } = useAuthenticator((context) => [context.authStatus]);
+	const Router = useRouter();
+
+	if (authStatus == "authenticated") {
+		Router.replace("/dashboard?tab=home");
+	}
+
 	const heroBanner = () => {
 		const heroSubTextStyling = "font-light";
 		const buttonStyling =
@@ -39,7 +48,9 @@ const Home = () => {
 		);
 	};
 
-	return <>{heroBanner()}</>;
+	if (authStatus != "authenticated") {
+		return <>{heroBanner()}</>;
+	}
 };
 
 export default Home;
