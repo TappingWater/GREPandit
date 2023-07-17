@@ -13,20 +13,14 @@ export const createUser = async () => {
 		method: "POST",
 		url: url,
 	};
-	try {
-		const response = await sendRequest(requestOptions);
-		return response;
-	} catch (error) {
-		const axiosError = error as AxiosError;
-		// 409 means user already exists
-		if (axiosError.response && axiosError.response.status === 409) {
-			return {
-				data: "User already exists",
-			};
-		}
-		console.error(`Unable to create user`, error);
-		throw error;
+	const response = await sendRequest(requestOptions);
+	if (response.status === 409) {
+		return {
+			data: "User exists",
+			error: null,
+		};
 	}
+	return { data: response, error: null };
 };
 
 /**
@@ -81,7 +75,11 @@ export const getMarkedWords = async () => {
 
 	try {
 		const response = await sendRequest(requestOptions);
-		return response.data.map((item: MarkedWordResponse) => item.word);
+		if (response.data != null) {
+			return response.data.map((item: MarkedWordResponse) => item.word);
+		} else {
+			return [];
+		}
 	} catch (error) {
 		console.error("Unable to get marked words for user");
 		throw error;
@@ -97,9 +95,13 @@ export const getMarkedQuestions = async (): Promise<number[]> => {
 
 	try {
 		const response = await sendRequest(requestOptions);
-		return response.data.map(
-			(item: MarkedQuestionResponse) => item.verbal_question_id
-		);
+		if (response.data != null) {
+			return response.data.map(
+				(item: MarkedQuestionResponse) => item.verbal_question_id
+			);
+		} else {
+			return [];
+		}
 	} catch (error) {
 		console.error(`Error getting marked questions:`, error);
 		throw error;
@@ -150,7 +152,11 @@ export const getProblematicWords = async (): Promise<Word[]> => {
 	};
 	try {
 		const response = await sendRequest(requestOptions);
-		return response.data.map((item: Word) => item);
+		if (response.data != null) {
+			return response.data.map((item: Word) => item);
+		} else {
+			return [];
+		}
 	} catch (error) {
 		console.error(`Unable to get problematic words:`, error);
 		throw error;

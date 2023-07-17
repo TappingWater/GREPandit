@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const Footer = () => {
 	// Define footer links for rendering
@@ -47,10 +48,7 @@ const Footer = () => {
 
 	// Tailwind Styling
 	const footerStyling =
-		"bg-white text-black h-[20%] max-w-[100vw] p-1 border-t-2 border-solid border-pink-300 font-tabs text-xs";
-	const linkDivStyling = "flex justify-center space-x-4 mb-1 align-baseline";
-	const copyrightStyling = "text-center";
-
+		"bg-white p-4 text-black h-[20%] max-w-[100vw] flex sm:flex-col md:flex-row p-1 border-t-2 border-solid border-pink-300 font-tabs text-xs";
 	return (
 		<footer className={footerStyling}>
 			{/* <div className={linkDivStyling}>
@@ -79,7 +77,17 @@ const Footer = () => {
 					</motion.a>
 				))}
 			</div> */}
-			<p className={copyrightStyling}>Copyright &copy; {cpyRightMsg}</p>
+			<div className='flex-1'>
+				<p className=''>Copyright &copy; {cpyRightMsg}</p>
+			</div>
+			<div className='grow flex justify-end space-x-2'>
+				<Link className='hover:text-sky-600' href='/policy'>
+					Data Policy
+				</Link>
+				<Link className='hover:text-sky-600' href='/terms'>
+					Terms And Conditions
+				</Link>
+			</div>
 		</footer>
 	);
 };

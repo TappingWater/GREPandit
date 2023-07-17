@@ -25,7 +25,7 @@ const VerbalQuiz = () => {
 	const [markedWords] = useAtom(markedWordsAtom);
 	const [userStats] = useAtom(userVbStats);
 	const [currState, setCurrState] = useState<string>("");
-	const [noMoreProblems, setNoMoreProblems] = useState(false);
+	const [noMoreProblems, setNoMoreProblems] = useState("");
 
 	useEffect(() => {
 		handleProblemCompleted();
@@ -83,7 +83,9 @@ const VerbalQuiz = () => {
 			if (currState == "adaptive") {
 				getAdaptiveQuestions(getQuestionsToAvoid()).then((problems) => {
 					if (problems.length == 0) {
-						setNoMoreProblems(true);
+						setNoMoreProblems(
+							"No more problems in the question bank that fit your criteria."
+						);
 					} else {
 						setProblems((oldProblems) => [
 							...oldProblems,
@@ -97,7 +99,9 @@ const VerbalQuiz = () => {
 					getWordsToSearchFor()
 				).then((problems) => {
 					if (problems.length == 0) {
-						setNoMoreProblems(true);
+						setNoMoreProblems(
+							"No more problems for vocabulary you have marked in the question bank."
+						);
 					} else {
 						setProblems((oldProblems) => [
 							...oldProblems,
@@ -111,7 +115,9 @@ const VerbalQuiz = () => {
 					exclude_ids: getQuestionsToAvoid(),
 				}).then((problems) => {
 					if (problems.length == 0) {
-						setNoMoreProblems(true);
+						setNoMoreProblems(
+							"No more problems in the question bank. Congratulations you have completed all our problems"
+						);
 					} else {
 						setProblems((oldProblems) => [
 							...oldProblems,
@@ -120,9 +126,9 @@ const VerbalQuiz = () => {
 					}
 				});
 			} else if (currState == "test") {
-				getQuestions([13, 14, 15, 16, 17]).then((problems) => {
+				getQuestions([]).then((problems) => {
 					if (problems.length == 0) {
-						setNoMoreProblems(true);
+						setNoMoreProblems("No test problems");
 					} else {
 						setProblems((oldProblems) => [
 							...oldProblems,
@@ -140,6 +146,8 @@ const VerbalQuiz = () => {
 	const getQuestionsToAvoid = () => {
 		const correctQuestions = new Set<number>();
 		const questionsToAvoid = new Set<number>();
+		console.log(userStats);
+		console.log(userStats.length);
 		userStats.forEach((stat) => {
 			if (stat.correct) {
 				const qid = stat.question_id;
@@ -167,6 +175,7 @@ const VerbalQuiz = () => {
 		});
 		userStats
 			.filter((stat) => incorrectQuestions.has(stat.question_id))
+			.filter((q) => q.vocabulary != null)
 			.forEach((q) => {
 				q.vocabulary.forEach((word) => wordIds.add(word.id));
 			});

@@ -1,15 +1,24 @@
+import { useEffect, useState } from "react";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-// Home component
 const Home = () => {
 	const { authStatus } = useAuthenticator((context) => [context.authStatus]);
 	const Router = useRouter();
+	const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-	if (authStatus == "authenticated") {
-		Router.replace("/dashboard?tab=home");
+	useEffect(() => {
+		if (authStatus === "authenticated") {
+			Router.replace("/dashboard?tab=home");
+		} else {
+			setIsCheckingAuth(false);
+		}
+	}, [authStatus, Router]);
+
+	if (isCheckingAuth) {
+		return null; // or return a loading spinner
 	}
 
 	const heroBanner = () => {

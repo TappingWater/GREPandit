@@ -117,6 +117,17 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 		initMarkedWordsSetRef.current = initialMarkedWordsSet;
 	}, [initialMarkedWordsSet]);
 
+	useEffect(() => {
+		const tryCreateUser = async () => {
+			try {
+				await createUser();
+			} catch (error) {
+				console.log(error);
+			}
+		};
+		tryCreateUser();
+	}, []);
+
 	// Update the words and questions on the server when component unloads
 	useEffect(() => {
 		const fetchData = async () => {
@@ -127,7 +138,6 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 						getMarkedQuestions(),
 						getMarkedWords(),
 						getVerbalStats(),
-						createUser(),
 					]);
 				// Update state with fetched data
 				setMarkedQuestionsSet(new Set(markedQuestions));
@@ -152,6 +162,21 @@ const VerbalPage: React.FC<UserPageProps> = () => {
 				}
 			})();
 		};
+	}, []);
+
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			(async () => {
+				try {
+					updateMarkedQuestions();
+					updateMarkedWords();
+				} catch (error) {
+					console.error(error);
+				}
+			})();
+		}, 1 * 60 * 1000); // 3 minutes
+
+		return () => clearInterval(intervalId); // Clear the interval when the component unmounts
 	}, []);
 
 	const renderSubTab = () => {

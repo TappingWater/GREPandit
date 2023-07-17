@@ -8,7 +8,7 @@ export const createVerbalStat = async (
 	correct: boolean,
 	answers: string[],
 	duration: number
-) => {
+): Promise<VerbalStat> => {
 	const request: VerbalStatRequest = {
 		question_id: questionId,
 		correct: correct,

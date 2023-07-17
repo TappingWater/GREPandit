@@ -11,7 +11,7 @@ import CheckedButton from "../ui/CheckedButton";
 import { createVerbalStat } from "@/lib/api/verbalStatRequests";
 import { isAnswerCorrect } from "@/lib/helper/verbal";
 import { useAtom } from "jotai";
-import { markedQuestionsAtom } from "@/pages/dashboard";
+import { markedQuestionsAtom, userVbStats } from "@/pages/dashboard";
 import LoadingAnimation from "../ui/Loading";
 
 /**
@@ -25,11 +25,12 @@ const VerbalProblemUI = ({
 }: {
 	problem: VerbalProblem;
 	onProblemCompleted: () => void;
-	noMoreProblems: boolean;
+	noMoreProblems: string;
 }) => {
 	const [timerDate, setTimerDate] = useState(new Date(Date.now()));
 	const timerRef = useRef<TimerHandle | null>(null);
 	const [retyingProblem, setRetryingProblem] = useState(false);
+	const [userStats, setUserStats] = useAtom(userVbStats);
 
 	// Handle marking a problem
 	const [markedQuestions, setMarkedQuestions] = useAtom(markedQuestionsAtom);
@@ -47,7 +48,7 @@ const VerbalProblemUI = ({
 	 * Function that is used when handling a problem submission.
 	 * User stats are sent to the endpoint for saving
 	 */
-	const handleSubmit = (
+	const handleSubmit = async (
 		selectedOptions: string[],
 		optionMap: Map<string, Option>
 	) => {
@@ -59,12 +60,14 @@ const VerbalProblemUI = ({
 			const elapsedTime = timerRef.current.getElapsedTime();
 		}
 		if (!retyingProblem) {
-			createVerbalStat(
+			await createVerbalStat(
 				problem.id,
 				isAnswerCorrect(selectedOptions, optionMap),
 				selectedOptions,
 				timerRef.current!.getElapsedTime()
-			);
+			).then((stat) => {
+				setUserStats((stats) => [...stats, stat]);
+			});
 		}
 	};
 
@@ -191,8 +194,12 @@ const VerbalProblemUI = ({
 				{renderProblem(problem)}
 			</div>
 		);
-	} else if (noMoreProblems) {
-		return <>No more problems within question bank for criteria</>;
+	} else if (noMoreProblems != "") {
+		return (
+			<div className='w-full h-[300px] flex items-center justify-center font-tabs text-lg font-semibold'>
+				{noMoreProblems}
+			</div>
+		);
 	} else {
 		return <LoadingAnimation />;
 	}

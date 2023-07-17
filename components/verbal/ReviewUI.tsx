@@ -116,23 +116,27 @@ const ReviewUI = () => {
 	};
 
 	const displayCards = (words: Word[], wordsIdx: number, subTab: string) => {
-		if (words && wordsIdx < words.length) {
-			return (
-				<>
-					<Title tab={"Vocabulary"} subTab={subTab} />
-					<div className='flex flex-col items-start w-full min-h-screen'>
-						<RaisedBtn
-							label={"Back"}
-							color={"sky"}
-							onClick={() => setCurrState("")}
-							width={50}
-							height={25}
-						/>
+		return (
+			<>
+				<Title tab={"Vocabulary"} subTab={subTab} />
+				<div className='flex flex-col items-start w-full min-h-screen'>
+					<RaisedBtn
+						label={"Back"}
+						color={"sky"}
+						onClick={() => setCurrState("")}
+						width={50}
+						height={25}
+					/>
+					{words && wordsIdx < words.length ? (
 						<CardCarousel words={words} />
-					</div>
-				</>
-			);
-		}
+					) : (
+						<div className='w-full h-[300px] flex items-center justify-center font-tabs text-lg font-semibold'>
+							No words to display
+						</div>
+					)}
+				</div>
+			</>
+		);
 	};
 
 	const variants = {
@@ -160,29 +164,29 @@ const ReviewUI = () => {
 			</>
 		);
 	} else if (currSet == "Problems") {
-		if (markedProblems.length > 0) {
-			return (
-				<>
-					<Title tab={"Review"} subTab={"Marked Questions"} />
-					<div className='flex flex-col items-start w-full min-h-screen'>
-						<RaisedBtn
-							label={"Back"}
-							color={"sky"}
-							onClick={() => setCurrState("")}
-							width={50}
-							height={25}
-						/>
-						<VerbalProblemUI
-							problem={markedProblems[markedProblemsIdx]}
-							onProblemCompleted={handleProblemCompleted}
-							noMoreProblems={false}
-						/>
-					</div>
-				</>
-			);
-		} else {
-			return <>No marked problems</>;
-		}
+		return (
+			<>
+				<Title tab={"Review"} subTab={"Marked Questions"} />
+				<div className='flex flex-col items-start w-full min-h-screen'>
+					<RaisedBtn
+						label={"Back"}
+						color={"sky"}
+						onClick={() => setCurrState("")}
+						width={50}
+						height={25}
+					/>
+					<VerbalProblemUI
+						problem={markedProblems[markedProblemsIdx]}
+						onProblemCompleted={handleProblemCompleted}
+						noMoreProblems={
+							markedProblems.length == 0
+								? "No problems have been marked."
+								: ""
+						}
+					/>
+				</div>
+			</>
+		);
 	} else if (currSet == "Personal") {
 		return (
 			<>
