@@ -1,10 +1,10 @@
 import { Auth } from "aws-amplify";
 import axios, { AxiosRequestConfig, Method } from "axios";
-// import https from "https";
+import https from "https";
 
-// const agent = new https.Agent({
-// 	rejectUnauthorized: false,
-// });
+const agent = new https.Agent({
+	rejectUnauthorized: false,
+});
 
 // Set a default base URL for axios
 axios.defaults.baseURL = process.env.API_BASE_URL;
@@ -26,7 +26,6 @@ export const sendRequest = async (options: IRequestOptions) => {
 		// Id token provides info about the user such as email
 		// Access token contains scopes of what the user can do
 		token = session.getIdToken().getJwtToken();
-		console.log(token);
 	} catch (error) {
 		console.error("Error getting session:", error);
 		throw error;
@@ -43,7 +42,7 @@ export const sendRequest = async (options: IRequestOptions) => {
 			"Access-Control-Allow-Origin": "*",
 			Authorization: `Bearer ${token}`,
 		},
-		// httpsAgent: agent,
+		httpsAgent: agent,
 	};
 	try {
 		const response = await axios(requestOptions);
