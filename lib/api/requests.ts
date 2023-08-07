@@ -1,10 +1,9 @@
 import { Auth } from "aws-amplify";
 import axios, { AxiosRequestConfig, Method } from "axios";
-import https from "https";
 
-const agent = new https.Agent({
-	rejectUnauthorized: false,
-});
+// const agent = new https.Agent({
+// 	rejectUnauthorized: false,
+// });
 
 // Set a default base URL for axios
 axios.defaults.baseURL = process.env.API_BASE_URL;
@@ -42,7 +41,7 @@ export const sendRequest = async (options: IRequestOptions) => {
 			"Access-Control-Allow-Origin": "*",
 			Authorization: `Bearer ${token}`,
 		},
-		httpsAgent: agent,
+		// httpsAgent: agent,
 	};
 	try {
 		const response = await axios(requestOptions);

@@ -3,7 +3,7 @@
 
 Official Domain: [GREPandit](https://grepandit.com)
 
-Backend Logic: [GREPanditAPI](https://github.com/TappingWater/GREPandit)
+Backend Logic: [GREPanditAPI](https://github.com/TappingWater/GREPanditAPI)
 
 ## Overview
 GREPandit is an advanced online platform designed specifically for test takers preparing for the verbal reasoning section of the GRE exam. Recognizing the challenges many face in this domain, GREPandit employs state-of-the-art artificial intelligence to auto-generate questions, simulating the intricate patterns of the actual GRE test.
