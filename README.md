@@ -81,6 +81,10 @@ To get GREPandit up and running locally:
     npm run dev
     ```
     The application should now be running on [localhost:3000](http://localhost:3000).
+	
+
+4. **Install the backend server**:
+	Instructions can be found here: [GREPandit REST API](https://github.com/TappingWater/GREPanditAPI).
 
 ## License
 
