@@ -70,8 +70,7 @@ const VerbalQuiz = () => {
 	const btnProps: NextBtnProps[] = [
 		adaptiveBtn,
 		vocabBtn,
-		randomBtn,
-		testBtn,
+		randomBtn
 	];
 
 	const handleProblemCompleted = () => {

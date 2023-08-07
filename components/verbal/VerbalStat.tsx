@@ -30,9 +30,9 @@ function calculateScores(data: VerbalStat[]): Map<string, number> | null {
 		(d) => `${d.type} ${d.difficulty}`
 	);
 	// Check if there are enough groups
-	// if (Object.keys(groupedByTypeAndDifficulty).length < 9) {
-	// 	return null;
-	// }
+	if (Object.keys(groupedByTypeAndDifficulty).length < 9) {
+		return null;
+	}
 	// Sort data by time
 	data.sort(
 		(a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()

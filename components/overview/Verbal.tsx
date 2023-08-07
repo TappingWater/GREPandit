@@ -1,6 +1,7 @@
 import { renderInfo, renderInfoAsList } from "@/lib/helper/overview";
 import { SearchBoxInfo } from "./SearchBox";
 import Title from "../ui/Title";
+import Link from "next/link";
 
 /**
  * Component that is used to render the data required for the
@@ -519,9 +520,23 @@ const Verbal = () => {
 		],
 	]);
 
+	const additionalResources = () => {
+		return (
+			<div>
+				<h3 className='ml-8 mt-2 mb-2 font-semibold text-sky-600 font-heading'>Additional Resources</h3>
+				<ul className='w-[90vw] md:w-[80vw] p-4 m-auto bg-white rounded text-sky-700'>
+					<li><Link className="hover:underline underline-offset-4" href="https://magoosh.com/">Magoosh: Test Preparation Platform</Link></li>
+					<li><Link className="hover:underline underline-offset-4"  href="https://www.ets.org/gre/test-takers/general-test/about.html">ETS Official Site</Link></li>
+					<li><Link className="hover:underline underline-offset-4" href="https://www.vocabulary.com/">Vocabulary</Link></li>
+				</ul>
+			</div>
+		)
+	}
+
 	return (
 		<>
 			<Title tab={"Info"} />
+			{additionalResources()}
 			{renderInfo(infoMap)}
 		</>
 	);
